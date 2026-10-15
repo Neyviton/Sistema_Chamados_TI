@@ -73,3 +73,18 @@ class Tecnico(models.Model):
 
     def __str__(self):
         return self.nome
+
+# Criação model OrdemServico
+class OrdemServico(models.Model):
+    class Status(models.TextChoices):
+        RECEBIDA = 'RECEBIDA', 'Recebida'
+        EM_ANALISE = 'EM_ANALISE', 'Em análise'
+        AGUARDANDO_APROVACAO = (
+            "AGUARDANDO_APROVACAO",
+            "Aguardando aprovação",
+        )
+        AGUARDANDO_PECAS = "AGUARDANDO_PECAS", "Aguardando peças"
+        EM_REPARO = "EM_REPARO", "Em reparo"
+        CONCLUIDA = "CONCLUIDA", "Concluída"
+        ENTREGUE =  "ENTREGUE", "Entregue"
+        CANCELADA = "CANCELADA", "Cancelada"
