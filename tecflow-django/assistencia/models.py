@@ -29,7 +29,7 @@ class Cliente(models.Model):
     def __str__(self):
         return self.nome
 
-
+# Criação do model Equipamento
 class Equipamento(models.Model):
     class Tipo(models.TextChoices):
         CELULAR = "CELULAR", "Celular"
@@ -57,4 +57,19 @@ class Equipamento(models.Model):
 
     def __str__(self):
         return f"{self.marca} {self.modelo}"
-        
+
+#Criação do model Tecnico
+class Tecnico(models.Model):
+    nome = models.CharField(max_length=150)
+    email = models.EmailField(unique=True)
+    telefone = models.CharField(max_length=20)
+    especialidade = models.CharField(max_length=100)
+    ativo = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["nome"]
+        verbose_name = "Técnico"
+        verbose_name_plural = "Técnicos"
+
+    def __str__(self):
+        return self.nome
