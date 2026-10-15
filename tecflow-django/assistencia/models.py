@@ -29,3 +29,32 @@ class Cliente(models.Model):
     def __str__(self):
         return self.nome
 
+
+class Equipamento(models.Model):
+    class Tipo(models.TextChoices):
+        CELULAR = "CELULAR", "Celular"
+        NOTEBOOK = "NOTEBOOK", "Notebook"
+        COMPUTADOR = "COMPUTADOR", "Computador"
+        TELEVISAO = "TELEVISAO", "Televisão"
+        OUTRO = "OUTRO", "Outro"
+
+    cliente = models.ForeignKey(
+        Cliente,
+        on_delete=models.PROTECT,
+        related_name="equipamentos",
+    )
+    tipo = models.CharField(max_length=20, choices=Tipo.choices)
+    marca = models.CharField(max_length=100)
+    modelo = models.CharField(max_length=100)
+    numero_serie = models.CharField(max_length=100, blank=True)
+    descricao = models.TextField(blank=True)
+    data_cadastro = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["marca", "modelo"]
+        verbose_name = "Equipamento"
+        verbose_name_plural = "Equipamentos"
+
+    def __str__(self):
+        return f"{self.marca} {self.modelo}"
+        
