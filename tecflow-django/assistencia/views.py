@@ -1,90 +1,78 @@
 
-# assistencia/views.py
-
+# Importações
 from django.contrib import messages
 from django.db.models import Q
+from django.db.models.deletion import ProtectedError
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
-from django.db.models.deletion import ProtectedError
 
-from .forms import ClienteForm
-from .models import (
-    Cliente,
-    Equipamento,
-    OrdemServico,
-    Pagamento,
+from .forms import (
+    ClienteForm,
+    EquipamentoForm,
+    OrdemServicoForm,
+    PagamentoForm,
 )
+from .models import Cliente, Equipamento, OrdemServico, Pagamento
 
 
-# Dashboard
+# =========================
+# DASHBOARD
+# =========================
+
 def dashboard(request):
-    contexto = {
-        'titulo': 'Dashboard',
-    }
-
-    return render(request, 'assistencia/dashboard.html', contexto)
+    return render(request, 'assistencia/dashboard.html')
 
 
-# Lista de clientes
+# =========================
+# CLIENTES
+# =========================
+
 def clientes_lista(request):
-    pesquisa = request.GET.get('q', '').strip()
+    termo = request.GET.get('q', '').strip()
+    clientes = Cliente.objects.all().order_by('nome')
 
-    clientes = Cliente.objects.all()
-
-    if pesquisa:
+    if termo:
         clientes = clientes.filter(
-            Q(nome__icontains=pesquisa)
-            | Q(telefone__icontains=pesquisa)
-            | Q(email__icontains=pesquisa)
+            Q(nome__icontains=termo)
+            | Q(telefone__icontains=termo)
+            | Q(email__icontains=termo)
         )
 
-    contexto = {
-        'clientes': clientes,
-    }
+    return render(
+        request,
+        'assistencia/clientes/lista.html',
+        {'clientes': clientes},
+    )
 
-    return render(request, 'assistencia/clientes/lista.html', contexto)
 
-
-# Cadastro de clientes
 def cliente_criar(request):
     if request.method == 'POST':
         form = ClienteForm(request.POST)
 
         if form.is_valid():
             form.save()
-            messages.success(request, 'Cliente cadastrado com sucesso.')
+            messages.success(request, 'Cliente cadastrado com sucesso!')
             return redirect('assistencia:clientes_lista')
     else:
         form = ClienteForm()
 
-    contexto = {
-        'titulo': 'Cadastrar cliente',
-        'form': form,
-    }
-
     return render(
         request,
         'assistencia/clientes/formulario.html',
-        contexto,
+        {'titulo': 'Cadastrar cliente', 'form': form},
     )
 
 
-# Detalhes do cliente
 def cliente_detalhes(request, pk):
     cliente = get_object_or_404(Cliente, pk=pk)
-
-    contexto = {
-        'cliente': cliente,
-    }
 
     return render(
         request,
         'assistencia/clientes/detalhes.html',
-        contexto,
+        {'cliente': cliente},
     )
 
 
-# Edição de clientes
 def cliente_editar(request, pk):
     cliente = get_object_or_404(Cliente, pk=pk)
 
@@ -93,141 +81,225 @@ def cliente_editar(request, pk):
 
         if form.is_valid():
             form.save()
-            messages.success(request, 'Cliente atualizado com sucesso.')
-            return redirect('assistencia:cliente_detalhes', pk=cliente.pk)
+            messages.success(request, 'Cliente atualizado com sucesso!')
+            return redirect(
+                'assistencia:cliente_detalhes',
+                pk=cliente.pk,
+            )
     else:
         form = ClienteForm(instance=cliente)
-
-    contexto = {
-        'titulo': 'Editar cliente',
-        'cliente': cliente,
-        'form': form,
-    }
 
     return render(
         request,
         'assistencia/clientes/formulario.html',
-        contexto,
+        {
+            'titulo': 'Editar cliente',
+            'cliente': cliente,
+            'form': form,
+        },
     )
 
 
-# Exclusão de clientes
 @require_POST
 def cliente_excluir(request, pk):
     cliente = get_object_or_404(Cliente, pk=pk)
 
     try:
         cliente.delete()
-        messages.success(request, 'Cliente excluído com sucesso.')
+        messages.success(request, 'Cliente excluído com sucesso!')
     except ProtectedError:
         messages.error(
             request,
-            'Não foi possível excluir este cliente porque existem '
+            'Não é possível excluir este cliente porque existem '
             'equipamentos vinculados a ele.',
         )
 
     return redirect('assistencia:clientes_lista')
 
 
-# Lista de equipamentos
-def equipamentos_lista(request):
-    equipamentos = Equipamento.objects.select_related('cliente').all()
+# =========================
+# EQUIPAMENTOS
+# =========================
 
-    contexto = {
-        'equipamentos': equipamentos,
-    }
+def equipamentos_lista(request):
+    termo = request.GET.get('q', '').strip()
+
+    equipamentos = Equipamento.objects.select_related(
+        'cliente'
+    ).all().order_by('-pk')
+
+    if termo:
+        equipamentos = equipamentos.filter(
+            Q(cliente__nome__icontains=termo)
+            | Q(tipo__icontains=termo)
+            | Q(marca__icontains=termo)
+            | Q(modelo__icontains=termo)
+            | Q(numero_serie__icontains=termo)
+        )
 
     return render(
         request,
         'assistencia/equipamentos/lista.html',
-        contexto,
+        {'equipamentos': equipamentos},
     )
 
 
-# Cadastro de equipamentos
 def equipamento_criar(request):
-    contexto = {
-        'titulo': 'Cadastrar equipamento',
-        'modo': 'criar',
-    }
+    if request.method == 'POST':
+        form = EquipamentoForm(request.POST)
+
+        if form.is_valid():
+            equipamento = form.save()
+            messages.success(
+                request,
+                'Equipamento cadastrado com sucesso!',
+            )
+            return redirect(
+                'assistencia:equipamento_detalhes',
+                pk=equipamento.pk,
+            )
+    else:
+        form = EquipamentoForm()
 
     return render(
         request,
         'assistencia/equipamentos/formulario.html',
-        contexto,
+        {
+            'titulo': 'Cadastrar equipamento',
+            'modo': 'criar',
+            'form': form,
+        },
     )
 
 
-# Detalhes do equipamento
 def equipamento_detalhes(request, pk):
     equipamento = get_object_or_404(
         Equipamento.objects.select_related('cliente'),
         pk=pk,
     )
 
-    contexto = {
-        'equipamento': equipamento,
-    }
-
     return render(
         request,
         'assistencia/equipamentos/detalhes.html',
-        contexto,
+        {'equipamento': equipamento},
     )
 
 
-# Edição de equipamentos
 def equipamento_editar(request, pk):
     equipamento = get_object_or_404(Equipamento, pk=pk)
 
-    contexto = {
-        'titulo': 'Editar equipamento',
-        'modo': 'editar',
-        'equipamento': equipamento,
-        'equipamento_id': pk,
-    }
+    if request.method == 'POST':
+        form = EquipamentoForm(
+            request.POST,
+            instance=equipamento,
+        )
+
+        if form.is_valid():
+            form.save()
+            messages.success(
+                request,
+                'Equipamento atualizado com sucesso!',
+            )
+            return redirect(
+                'assistencia:equipamento_detalhes',
+                pk=equipamento.pk,
+            )
+    else:
+        form = EquipamentoForm(instance=equipamento)
 
     return render(
         request,
         'assistencia/equipamentos/formulario.html',
-        contexto,
+        {
+            'titulo': 'Editar equipamento',
+            'modo': 'editar',
+            'equipamento': equipamento,
+            'form': form,
+        },
     )
 
 
-# Lista de ordens de serviço
+@require_POST
+def equipamento_excluir(request, pk):
+    equipamento = get_object_or_404(Equipamento, pk=pk)
+
+    try:
+        equipamento.delete()
+        messages.success(
+            request,
+            'Equipamento excluído com sucesso!',
+        )
+        return redirect('assistencia:equipamentos_lista')
+
+    except ProtectedError:
+        messages.error(
+            request,
+            'Não é possível excluir este equipamento porque ele '
+            'está vinculado a uma ordem de serviço.',
+        )
+        return redirect(
+            'assistencia:equipamento_detalhes',
+            pk=equipamento.pk,
+        )
+
+
+# =========================
+# ORDENS DE SERVIÇO
+# =========================
+
 def ordens_servico_lista(request):
-    ordens_servico = OrdemServico.objects.select_related(
+    termo = request.GET.get('q', '').strip()
+
+    ordens = OrdemServico.objects.select_related(
         'equipamento',
         'equipamento__cliente',
         'tecnico',
-    ).all()
+    ).all().order_by('-pk')
 
-    contexto = {
-        'ordens_servico': ordens_servico,
-    }
+    if termo:
+        ordens = ordens.filter(
+            Q(equipamento__cliente__nome__icontains=termo)
+            | Q(equipamento__marca__icontains=termo)
+            | Q(equipamento__modelo__icontains=termo)
+            | Q(descricao_problema__icontains=termo)
+            | Q(status__icontains=termo)
+        )
 
     return render(
         request,
-        'assistencia/ordens_servico/lista.html',
-        contexto,
+        'assistencia/ordens/lista.html',
+        {'ordens': ordens},
     )
 
 
-# Cadastro de ordem de serviço
 def ordem_servico_criar(request):
-    contexto = {
-        'titulo': 'Nova Ordem de Serviço',
-        'modo': 'criar',
-    }
+    if request.method == 'POST':
+        form = OrdemServicoForm(request.POST)
+
+        if form.is_valid():
+            ordem = form.save()
+            messages.success(
+                request,
+                'Ordem de serviço cadastrada com sucesso!',
+            )
+            return redirect(
+                'assistencia:ordem_servico_detalhes',
+                pk=ordem.pk,
+            )
+    else:
+        form = OrdemServicoForm()
 
     return render(
         request,
-        'assistencia/ordens_servico/formulario.html',
-        contexto,
+        'assistencia/ordens/formulario.html',
+        {
+            'titulo': 'Cadastrar ordem de serviço',
+            'modo': 'criar',
+            'form': form,
+        },
     )
 
 
-# Detalhes da ordem de serviço
 def ordem_servico_detalhes(request, pk):
     ordem = get_object_or_404(
         OrdemServico.objects.select_related(
@@ -238,103 +310,133 @@ def ordem_servico_detalhes(request, pk):
         pk=pk,
     )
 
-    contexto = {
-        'ordem': ordem,
-    }
-
     return render(
         request,
-        'assistencia/ordens_servico/detalhes.html',
-        contexto,
+        'assistencia/ordens/detalhes.html',
+        {'ordem': ordem},
     )
 
 
-# Edição de ordem de serviço
 def ordem_servico_editar(request, pk):
     ordem = get_object_or_404(OrdemServico, pk=pk)
 
-    contexto = {
-        'titulo': 'Editar Ordem de Serviço',
-        'modo': 'editar',
-        'ordem': ordem,
-        'ordem_id': pk,
-    }
+    if request.method == 'POST':
+        form = OrdemServicoForm(
+            request.POST,
+            instance=ordem,
+        )
+
+        if form.is_valid():
+            form.save()
+            messages.success(
+                request,
+                'Ordem de serviço atualizada com sucesso!',
+            )
+            return redirect(
+                'assistencia:ordem_servico_detalhes',
+                pk=ordem.pk,
+            )
+    else:
+        form = OrdemServicoForm(instance=ordem)
 
     return render(
         request,
-        'assistencia/ordens_servico/formulario.html',
-        contexto,
+        'assistencia/ordens/formulario.html',
+        {
+            'titulo': 'Editar ordem de serviço',
+            'modo': 'editar',
+            'ordem': ordem,
+            'form': form,
+        },
     )
 
 
-# Lista de pagamentos
+# =========================
+# PAGAMENTOS
+# =========================
+
 def pagamentos_lista(request):
     pagamentos = Pagamento.objects.select_related(
         'ordem_servico',
-        'ordem_servico__equipamento',
-        'ordem_servico__equipamento__cliente',
-    ).all()
-
-    contexto = {
-        'pagamentos': pagamentos,
-    }
+    ).all().order_by('-pk')
 
     return render(
         request,
         'assistencia/pagamentos/lista.html',
-        contexto,
+        {'pagamentos': pagamentos},
     )
 
 
-# Cadastro de pagamento
 def pagamento_criar(request):
-    contexto = {
-        'titulo': 'Registrar pagamento',
-        'modo': 'criar',
-    }
+    if request.method == 'POST':
+        form = PagamentoForm(request.POST)
+
+        if form.is_valid():
+            pagamento = form.save()
+            messages.success(
+                request,
+                'Pagamento cadastrado com sucesso!',
+            )
+            return redirect(
+                'assistencia:pagamento_detalhes',
+                pk=pagamento.pk,
+            )
+    else:
+        form = PagamentoForm()
 
     return render(
         request,
         'assistencia/pagamentos/formulario.html',
-        contexto,
+        {
+            'titulo': 'Cadastrar pagamento',
+            'modo': 'criar',
+            'form': form,
+        },
     )
 
 
-# Detalhes do pagamento
 def pagamento_detalhes(request, pk):
     pagamento = get_object_or_404(
-        Pagamento.objects.select_related(
-            'ordem_servico',
-            'ordem_servico__equipamento',
-            'ordem_servico__equipamento__cliente',
-        ),
+        Pagamento.objects.select_related('ordem_servico'),
         pk=pk,
     )
-
-    contexto = {
-        'pagamento': pagamento,
-    }
 
     return render(
         request,
         'assistencia/pagamentos/detalhes.html',
-        contexto,
+        {'pagamento': pagamento},
     )
 
 
-# Edição de pagamento
 def pagamento_editar(request, pk):
     pagamento = get_object_or_404(Pagamento, pk=pk)
 
-    contexto = {
-        'titulo': 'Editar pagamento',
-        'modo': 'editar',
-        'pagamento': pagamento,
-        'pagamento_id': pk,
-    }
+    if request.method == 'POST':
+        form = PagamentoForm(
+            request.POST,
+            instance=pagamento,
+        )
+
+        if form.is_valid():
+            form.save()
+            messages.success(
+                request,
+                'Pagamento atualizado com sucesso!',
+            )
+            return redirect(
+                'assistencia:pagamento_detalhes',
+                pk=pagamento.pk,
+            )
+    else:
+        form = PagamentoForm(instance=pagamento)
 
     return render(
         request,
         'assistencia/pagamentos/formulario.html',
-        contexto,
+        {
+            'titulo': 'Editar pagamento',
+            'modo': 'editar',
+            'pagamento': pagamento,
+            'form': form,
+        },
     )

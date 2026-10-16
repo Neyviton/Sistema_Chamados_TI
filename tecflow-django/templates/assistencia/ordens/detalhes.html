@@ -1,257 +1,117 @@
-{% extends 'assistencia/base.html' %}
 
-{% block title %}Ordem de Serviço #{{ ordem.id }} | TecFlow{% endblock %}
+{% extends 'base.html' %}
+
+{% block title %}Ordem de Serviço #{{ ordem.pk }} | TecFlow{% endblock %}
 
 {% block content %}
 
-<!-- Cabeçalho e navegação -->
+{% if messages %}
+    {% for mensagem in messages %}
+        <div class="alert alert-{{ mensagem.tags|default:'info' }} alert-dismissible fade show" role="alert">
+            {{ mensagem }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
 <div class="mb-4">
-    <a
-        href="{% url 'assistencia:ordens_servico_lista' %}"
-        class="text-decoration-none small"
-    >
-        &larr; Voltar para Ordens de Serviço
+    <a href="{% url 'assistencia:ordens_servico_lista' %}" class="text-decoration-none small">
+        &larr; Voltar para ordens de serviço
     </a>
 
-    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mt-2">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-3">
         <div>
-            <h1 class="h3 mb-1">
-                Ordem de Serviço #{{ ordem.id }}
-            </h1>
-
-            <p class="text-muted mb-0">
-                Detalhes do atendimento técnico.
-            </p>
+            <h1 class="h2 fw-bold mb-1">Ordem de Serviço #{{ ordem.pk }}</h1>
+            <p class="text-muted mb-0">Detalhes e acompanhamento do serviço.</p>
         </div>
 
-        <!-- Ação de edição -->
-        <a
-            href="{% url 'assistencia:ordem_servico_editar' ordem.id %}"
-            class="btn btn-outline-primary"
-        >
+        <a href="{% url 'assistencia:ordem_servico_editar' ordem.pk %}" class="btn btn-primary">
             Editar ordem
         </a>
     </div>
 </div>
 
-<!-- Resumo da ordem -->
-<div class="card border-0 shadow-sm mb-4">
+<div class="card shadow-sm">
     <div class="card-body p-4">
+        <h2 class="h5 mb-3">Informações da ordem</h2>
 
-        <!-- Status e prioridade -->
-        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
-            <div>
-                <span class="text-muted small d-block mb-2">
-                    Status atual
-                </span>
-
-                {% if ordem.status == 'CONCLUIDA' or ordem.status == 'ENTREGUE' %}
-                    <span class="badge text-bg-success">
-                        {{ ordem.status_label }}
-                    </span>
-                {% elif ordem.status == 'CANCELADA' %}
-                    <span class="badge text-bg-danger">
-                        {{ ordem.status_label }}
-                    </span>
-                {% elif ordem.status == 'EM_REPARO' %}
-                    <span class="badge text-bg-primary">
-                        {{ ordem.status_label }}
-                    </span>
-                {% else %}
-                    <span class="badge text-bg-secondary">
-                        {{ ordem.status_label }}
-                    </span>
-                {% endif %}
-            </div>
-
-            <div>
-                <span class="text-muted small d-block mb-2">
-                    Prioridade
-                </span>
-
-                {% if ordem.prioridade == 'URGENTE' %}
-                    <span class="badge text-bg-danger">
-                        {{ ordem.prioridade_label }}
-                    </span>
-                {% elif ordem.prioridade == 'ALTA' %}
-                    <span class="badge text-bg-warning">
-                        {{ ordem.prioridade_label }}
-                    </span>
-                {% else %}
-                    <span class="badge text-bg-light border">
-                        {{ ordem.prioridade_label }}
-                    </span>
-                {% endif %}
-            </div>
-        </div>
-
-        <hr>
-
-        <!-- Equipamento e cliente -->
-        <div class="row g-4">
+        <div class="row g-3">
             <div class="col-md-6">
-                <span class="text-muted small d-block mb-1">
-                    Equipamento
-                </span>
-
-                <span class="fw-semibold">
-                    {{ ordem.equipamento }}
-                </span>
+                <strong>Cliente</strong>
+                <p>{{ ordem.equipamento.cliente.nome }}</p>
             </div>
 
             <div class="col-md-6">
-                <span class="text-muted small d-block mb-1">
-                    Cliente
-                </span>
-
-                <span class="fw-semibold">
-                    {{ ordem.cliente }}
-                </span>
+                <strong>Equipamento</strong>
+                <p>
+                    {{ ordem.equipamento.get_tipo_display }}
+                    — {{ ordem.equipamento.marca }}
+                    {{ ordem.equipamento.modelo }}
+                </p>
             </div>
 
             <div class="col-md-6">
-                <span class="text-muted small d-block mb-1">
-                    Técnico responsável
-                </span>
-
-                <span class="fw-semibold">
-                    {{ ordem.tecnico|default:"Não atribuído" }}
-                </span>
+                <strong>Técnico responsável</strong>
+                <p>{{ ordem.tecnico.nome|default:"Não atribuído" }}</p>
             </div>
 
             <div class="col-md-6">
-                <span class="text-muted small d-block mb-1">
-                    Data de entrada
-                </span>
-
-                <span class="fw-semibold">
-                    {{ ordem.data_entrada }}
-                </span>
+                <strong>Status</strong>
+                <p>{{ ordem.get_status_display }}</p>
             </div>
-        </div>
 
-    </div>
-</div>
-
-<!-- Descrição do problema e diagnóstico -->
-<div class="card border-0 shadow-sm mb-4">
-    <div class="card-body p-4">
-
-        <h2 class="h5 mb-3">Informações do atendimento</h2>
-
-        <!-- Problema relatado -->
-        <div class="mb-4">
-            <h3 class="h6 text-muted">Descrição do problema</h3>
-
-            <p class="mb-0">
-                {{ ordem.descricao_problema|default:"Nenhuma descrição informada." }}
-            </p>
-        </div>
-
-        <!-- Diagnóstico técnico -->
-        <div>
-            <h3 class="h6 text-muted">Diagnóstico técnico</h3>
-
-            <p class="mb-0">
-                {{ ordem.diagnostico|default:"Diagnóstico ainda não informado." }}
-            </p>
-        </div>
-
-    </div>
-</div>
-
-<!-- Informações financeiras -->
-<div class="card border-0 shadow-sm mb-4">
-    <div class="card-body p-4">
-
-        <h2 class="h5 mb-3">Orçamento</h2>
-
-        <div class="row g-4">
-
-            <!-- Valor do orçamento -->
             <div class="col-md-6">
-                <span class="text-muted small d-block mb-1">
-                    Valor previsto
-                </span>
+                <strong>Prioridade</strong>
+                <p>{{ ordem.get_prioridade_display }}</p>
+            </div>
 
-                <span class="h4 mb-0">
-                    {% if ordem.orcamento %}
-                        R$ {{ ordem.orcamento }}
+            <div class="col-md-6">
+                <strong>Orçamento</strong>
+                <p>
+                    {% if ordem.orcamento is not None %}
+                        R$ {{ ordem.orcamento|floatformat:2 }}
                     {% else %}
                         Não definido
                     {% endif %}
-                </span>
+                </p>
             </div>
 
-            <!-- Situação da aprovação -->
             <div class="col-md-6">
-                <span class="text-muted small d-block mb-1">
-                    Aprovação do orçamento
-                </span>
-
-                {% if ordem.orcamento_aprovado %}
-                    <span class="badge text-bg-success">
-                        Aprovado
-                    </span>
-                {% else %}
-                    <span class="badge text-bg-warning">
-                        Pendente
-                    </span>
-                {% endif %}
+                <strong>Orçamento aprovado?</strong>
+                <p>{% if ordem.orcamento_aprovado %}Sim{% else %}Não{% endif %}</p>
             </div>
 
-        </div>
+            <div class="col-md-6">
+                <strong>Data de entrada</strong>
+                <p>{{ ordem.data_entrada|date:"d/m/Y H:i" }}</p>
+            </div>
 
+            <div class="col-md-6">
+                <strong>Previsão de entrega</strong>
+                <p>{{ ordem.data_prevista|date:"d/m/Y H:i"|default:"Não definida" }}</p>
+            </div>
+
+            <div class="col-md-6">
+                <strong>Data de saída</strong>
+                <p>{{ ordem.data_saida|date:"d/m/Y H:i"|default:"Não definida" }}</p>
+            </div>
+
+            <div class="col-12">
+                <strong>Problema relatado</strong>
+                <p>{{ ordem.descricao_problema|linebreaksbr }}</p>
+            </div>
+
+            <div class="col-12">
+                <strong>Diagnóstico técnico</strong>
+                <p>{{ ordem.diagnostico|default:"Nenhum diagnóstico registrado."|linebreaksbr }}</p>
+            </div>
+        </div>
     </div>
 </div>
 
-<!-- Datas de acompanhamento -->
-<div class="card border-0 shadow-sm mb-4">
-    <div class="card-body p-4">
-
-        <h2 class="h5 mb-3">Acompanhamento</h2>
-
-        <div class="row g-4">
-
-            <!-- Previsão de conclusão -->
-            <div class="col-md-6">
-                <span class="text-muted small d-block mb-1">
-                    Previsão de conclusão
-                </span>
-
-                <span class="fw-semibold">
-                    {{ ordem.data_previsao|default:"Não definida" }}
-                </span>
-            </div>
-
-            <!-- Data de saída -->
-            <div class="col-md-6">
-                <span class="text-muted small d-block mb-1">
-                    Data de saída
-                </span>
-
-                <span class="fw-semibold">
-                    {{ ordem.data_saida|default:"Ainda não registrada" }}
-                </span>
-            </div>
-
-        </div>
-
-    </div>
-</div>
-
-<!-- Aviso de demonstração -->
-<div class="alert alert-info" role="status">
-    Esta página utiliza informações fictícias para demonstração.
-</div>
-
-<!-- Navegação inferior -->
-<div class="d-flex justify-content-end">
-    <a
-        href="{% url 'assistencia:ordens_servico_lista' %}"
-        class="btn btn-outline-secondary"
-    >
-        Voltar para a lista
+<div class="mt-4">
+    <a href="{% url 'assistencia:ordens_servico_lista' %}" class="btn btn-outline-secondary">
+        Voltar à lista
     </a>
 </div>
 

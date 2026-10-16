@@ -16,11 +16,23 @@ urlpatterns = [
     # Clientes
     path('clientes/', views.clientes_lista, name='clientes_lista'),
     path('clientes/novo/', views.cliente_criar, name='cliente_criar'),
-    path('clientes/<int:pk>/', views.cliente_detalhes, name='cliente_detalhes'),
-    path('clientes/<int:pk>/editar/', views.cliente_editar, name='cliente_editar'),
-    path('clientes/<int:pk>/excluir/', views.cliente_excluir, name='cliente_excluir'),
+    path(
+        'clientes/<int:pk>/',
+        views.cliente_detalhes,
+        name='cliente_detalhes',
+    ),
+    path(
+        'clientes/<int:pk>/editar/',
+        views.cliente_editar,
+        name='cliente_editar',
+    ),
+    path(
+        'clientes/<int:pk>/excluir/',
+        views.cliente_excluir,
+        name='cliente_excluir',
+    ),
 
-     # Equipamentos
+    # Equipamentos
     path(
         'equipamentos/',
         views.equipamentos_lista,
@@ -41,49 +53,53 @@ urlpatterns = [
         views.equipamento_editar,
         name='equipamento_editar',
     ),
+    path(
+        'equipamentos/<int:pk>/excluir/',
+        views.equipamento_excluir,
+        name='equipamento_excluir',
+    ),
 
-    # Rotas de Ordens de Serviço
-path(
-    'ordens-servico/',
-    views.ordens_servico_lista,
-    name='ordens_servico_lista',
-),
-path(
-    'ordens-servico/nova/',
-    views.ordem_servico_criar,
-    name='ordem_servico_criar',
-),
-path(
-    'ordens-servico/<int:pk>/',
-    views.ordem_servico_detalhes,
-    name='ordem_servico_detalhes',
-),
-path(
-    'ordens-servico/<int:pk>/editar/',
-    views.ordem_servico_editar,
-    name='ordem_servico_editar',
-),
+    # Ordens de serviço
+    path(
+        'ordens-servico/',
+        views.ordens_servico_lista,
+        name='ordens_servico_lista',
+    ),
+    path(
+        'ordens-servico/nova/',
+        views.ordem_servico_criar,
+        name='ordem_servico_criar',
+    ),
+    path(
+        'ordens-servico/<int:pk>/',
+        views.ordem_servico_detalhes,
+        name='ordem_servico_detalhes',
+    ),
+    path(
+        'ordens-servico/<int:pk>/editar/',
+        views.ordem_servico_editar,
+        name='ordem_servico_editar',
+    ),
 
-# Rotas de Pagamentos
-path(
-    'pagamentos/',
-    views.pagamentos_lista,
-    name='pagamentos_lista',
-),
-path(
-    'pagamentos/novo/',
-    views.pagamento_criar,
-    name='pagamento_criar',
-),
-path(
-    'pagamentos/<int:pk>/',
-    views.pagamento_detalhes,
-    name='pagamento_detalhes',
-),
-path(
-    'pagamentos/<int:pk>/editar/',
-    views.pagamento_editar,
-    name='pagamento_editar',
-),
+    # Pagamentos
+    path(
+        'pagamentos/',
+        views.pagamentos_lista,
+        name='pagamentos_lista',
+    ),
+    path(
+        'pagamentos/novo/',
+        views.pagamento_criar,
+        name='pagamento_criar',
+    ),
+    path(
+        'pagamentos/<int:pk>/',
+        views.pagamento_detalhes,
+        name='pagamento_detalhes',
+    ),
+    path(
+        'pagamentos/<int:pk>/editar/',
+        views.pagamento_editar,
+        name='pagamento_editar',
+    ),
 ]
-

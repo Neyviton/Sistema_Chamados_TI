@@ -1,154 +1,96 @@
-{% extends 'assistencia/base.html' %}
+
+{% extends 'base.html' %}
 
 {% block title %}Detalhes do equipamento | TecFlow{% endblock %}
 
 {% block content %}
 
-<!-- Cabeçalho e navegação -->
+{% if messages %}
+    {% for mensagem in messages %}
+        <div class="alert alert-{{ mensagem.tags|default:'info' }} alert-dismissible fade show" role="alert">
+            {{ mensagem }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
 <div class="mb-4">
-    <a
-        href="{% url 'assistencia:equipamentos_lista' %}"
-        class="text-decoration-none small"
-    >
+    <a href="{% url 'assistencia:equipamentos_lista' %}" class="text-decoration-none">
         &larr; Voltar para equipamentos
     </a>
 
-    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mt-2">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-3">
         <div>
-            <h1 class="h3 mb-1">Detalhes do equipamento</h1>
+            <h1 class="h2 fw-bold mb-1">Detalhes do equipamento</h1>
             <p class="text-muted mb-0">
-                Consulte as informações do equipamento cadastrado.
+                {{ equipamento.get_tipo_display }} — {{ equipamento.marca }} {{ equipamento.modelo }}
             </p>
         </div>
 
-        <!-- Ações disponíveis -->
-        <a
-            href="{% url 'assistencia:equipamento_editar' equipamento.id %}"
-            class="btn btn-outline-primary"
-        >
-            Editar equipamento
-        </a>
+        <div class="d-flex gap-2">
+            <a href="{% url 'assistencia:equipamento_editar' equipamento.pk %}" class="btn btn-primary">
+                Editar
+            </a>
+
+            <form method="post"
+                  action="{% url 'assistencia:equipamento_excluir' equipamento.pk %}"
+                  onsubmit="return confirm('Tem certeza que deseja excluir este equipamento?');">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-danger">
+                    Excluir
+                </button>
+            </form>
+        </div>
     </div>
 </div>
 
-<!-- Identificação do equipamento -->
-<div class="card border-0 shadow-sm mb-4">
+<div class="card shadow-sm">
     <div class="card-body p-4">
+        <h2 class="h5 fw-bold mb-3">Informações do equipamento</h2>
 
-        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
-            <div>
-                <span class="badge text-bg-primary mb-2">
-                    {{ equipamento.tipo }}
-                </span>
-
-                <h2 class="h4 mb-1">
-                    {{ equipamento.marca }} {{ equipamento.modelo }}
-                </h2>
-
-                <p class="text-muted mb-0">
-                    Número de série:
-                    {{ equipamento.numero_serie|default:"Não informado" }}
-                </p>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <span class="text-muted d-block">Tipo</span>
+                <strong>{{ equipamento.get_tipo_display }}</strong>
             </div>
 
-            <div class="text-md-end">
-                <span class="text-muted small d-block">
-                    Código de demonstração
-                </span>
-                <span class="fw-semibold">
-                    #{{ equipamento.id }}
-                </span>
+            <div class="col-md-6">
+                <span class="text-muted d-block">Marca</span>
+                <strong>{{ equipamento.marca|default:"—" }}</strong>
+            </div>
+
+            <div class="col-md-6">
+                <span class="text-muted d-block">Modelo</span>
+                <strong>{{ equipamento.modelo|default:"—" }}</strong>
+            </div>
+
+            <div class="col-md-6">
+                <span class="text-muted d-block">Número de série</span>
+                <strong>{{ equipamento.numero_serie|default:"—" }}</strong>
+            </div>
+
+            <div class="col-12">
+                <span class="text-muted d-block">Descrição</span>
+                <p class="mb-0">{{ equipamento.descricao|default:"Nenhuma descrição informada." }}</p>
             </div>
         </div>
 
-    </div>
-</div>
-
-<!-- Informações gerais -->
-<div class="card border-0 shadow-sm mb-4">
-    <div class="card-body p-4">
-
-        <h2 class="h5 mb-4">Informações gerais</h2>
-
-        <div class="row g-4">
-
-            <!-- Cliente vinculado -->
-            <div class="col-md-6">
-                <span class="text-muted small d-block mb-1">
-                    Cliente
-                </span>
-                <span class="fw-semibold">
-                    {{ equipamento.cliente }}
-                </span>
-            </div>
-
-            <!-- Marca -->
-            <div class="col-md-6">
-                <span class="text-muted small d-block mb-1">
-                    Marca
-                </span>
-                <span class="fw-semibold">
-                    {{ equipamento.marca }}
-                </span>
-            </div>
-
-            <!-- Modelo -->
-            <div class="col-md-6">
-                <span class="text-muted small d-block mb-1">
-                    Modelo
-                </span>
-                <span class="fw-semibold">
-                    {{ equipamento.modelo }}
-                </span>
-            </div>
-
-            <!-- Número de série -->
-            <div class="col-md-6">
-                <span class="text-muted small d-block mb-1">
-                    Número de série
-                </span>
-                <span class="fw-semibold">
-                    {{ equipamento.numero_serie|default:"Não informado" }}
-                </span>
-            </div>
-
-            <!-- Data de cadastro -->
-            <div class="col-md-6">
-                <span class="text-muted small d-block mb-1">
-                    Data de cadastro
-                </span>
-                <span class="fw-semibold">
-                    {{ equipamento.data_cadastro }}
-                </span>
-            </div>
-
-        </div>
-
-        <!-- Descrição do equipamento -->
         <hr class="my-4">
 
-        <h3 class="h6 mb-2">Descrição</h3>
+        <h2 class="h5 fw-bold mb-3">Cliente responsável</h2>
 
-        <p class="mb-0">
-            {{ equipamento.descricao|default:"Nenhuma descrição informada." }}
+        <p class="mb-1">
+            <strong>Nome:</strong> {{ equipamento.cliente.nome }}
         </p>
 
+        <p class="mb-1">
+            <strong>Telefone:</strong> {{ equipamento.cliente.telefone|default:"—" }}
+        </p>
+
+        <p class="mb-0">
+            <strong>E-mail:</strong> {{ equipamento.cliente.email|default:"—" }}
+        </p>
     </div>
-</div>
-
-<!-- Aviso sobre dados fictícios -->
-<div class="alert alert-info" role="status">
-    Estas informações são fictícias e servem apenas para demonstrar o layout.
-</div>
-
-<!-- Navegação inferior -->
-<div class="d-flex justify-content-end">
-    <a
-        href="{% url 'assistencia:equipamentos_lista' %}"
-        class="btn btn-outline-secondary"
-    >
-        Voltar para a lista
-    </a>
 </div>
 
 {% endblock %}
