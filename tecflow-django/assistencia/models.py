@@ -141,7 +141,7 @@ class OrdemServico(models.Model):
         verbose_name_plural = "Ordens de serviço"
         constraints = [
             models.CheckConstraint(
-                condition=Q(orcamento__get=0) | Q(orcamento__isnull=True),
+                condition=Q(orcamento__gt=0) | Q(orcamento__isnull=True),
                 name= "ordem_orcamento_nao_negativo",
             ),
         ]
