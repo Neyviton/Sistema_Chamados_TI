@@ -1,0 +1,155 @@
+{% extends 'assistencia/base.html' %}
+
+{% block title %}{{ titulo }} | TecFlow{% endblock %}
+
+{% block content %}
+
+<!-- Cabeçalho da página -->
+<div class="mb-4">
+    <a
+        href="{% url 'assistencia:equipamentos_lista' %}"
+        class="text-decoration-none small"
+    >
+        &larr; Voltar para equipamentos
+    </a>
+
+    <h1 class="h3 mt-2 mb-1">{{ titulo }}</h1>
+
+    <p class="text-muted mb-0">
+        Preencha as informações do equipamento.
+    </p>
+</div>
+
+<!-- Formulário de equipamento -->
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+
+        <!-- Aviso de demonstração -->
+        <div class="alert alert-info" role="status">
+            Formulário visual: as informações não serão salvas nesta etapa.
+        </div>
+
+        <form>
+
+            <!-- Dados principais do equipamento -->
+            <h2 class="h5 mb-3">Dados do equipamento</h2>
+
+            <div class="row g-3">
+
+                <!-- Cliente responsável -->
+                <div class="col-md-6">
+                    <label for="cliente" class="form-label">
+                        Cliente <span class="text-danger">*</span>
+                    </label>
+
+                    <select id="cliente" name="cliente" class="form-select">
+                        <option value="">Selecione um cliente</option>
+                        <option value="1">João da Silva</option>
+                        <option value="2">Maria Oliveira</option>
+                        <option value="3">Pedro Santos</option>
+                    </select>
+                </div>
+
+                <!-- Tipo de equipamento -->
+                <div class="col-md-6">
+                    <label for="tipo" class="form-label">
+                        Tipo de equipamento <span class="text-danger">*</span>
+                    </label>
+
+                    <select id="tipo" name="tipo" class="form-select">
+                        <option value="">Selecione o tipo</option>
+                        <option value="CELULAR">Celular</option>
+                        <option value="NOTEBOOK">Notebook</option>
+                        <option value="COMPUTADOR">Computador</option>
+                        <option value="TELEVISAO">Televisão</option>
+                        <option value="OUTRO">Outro</option>
+                    </select>
+                </div>
+
+                <!-- Marca -->
+                <div class="col-md-6">
+                    <label for="marca" class="form-label">
+                        Marca <span class="text-danger">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="marca"
+                        name="marca"
+                        class="form-control"
+                        placeholder="Ex.: Samsung"
+                    >
+                </div>
+
+                <!-- Modelo -->
+                <div class="col-md-6">
+                    <label for="modelo" class="form-label">
+                        Modelo <span class="text-danger">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="modelo"
+                        name="modelo"
+                        class="form-control"
+                        placeholder="Ex.: Galaxy A54"
+                    >
+                </div>
+
+                <!-- Número de série -->
+                <div class="col-12">
+                    <label for="numero_serie" class="form-label">
+                        Número de série
+                    </label>
+
+                    <input
+                        type="text"
+                        id="numero_serie"
+                        name="numero_serie"
+                        class="form-control"
+                        placeholder="Informe o número de série, se disponível"
+                    >
+
+                    <div class="form-text">
+                        Campo opcional.
+                    </div>
+                </div>
+
+                <!-- Descrição -->
+                <div class="col-12">
+                    <label for="descricao" class="form-label">
+                        Descrição
+                    </label>
+
+                    <textarea
+                        id="descricao"
+                        name="descricao"
+                        class="form-control"
+                        rows="4"
+                        placeholder="Informe detalhes relevantes do equipamento..."
+                    ></textarea>
+                </div>
+
+            </div>
+
+            <!-- Botões do formulário -->
+            <hr class="my-4">
+
+            <div class="d-flex flex-wrap justify-content-end gap-2">
+                <a
+                    href="{% url 'assistencia:equipamentos_lista' %}"
+                    class="btn btn-outline-secondary"
+                >
+                    Cancelar
+                </a>
+
+                <button type="button" class="btn btn-primary">
+                    Salvar equipamento
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+{% endblock %}
