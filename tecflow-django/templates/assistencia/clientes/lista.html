@@ -5,10 +5,21 @@
 
 {% block content %}
 
-<!-- Cabeçalho -->
+<!-- Mensagens do sistema -->
+{% if messages %}
+    {% for mensagem in messages %}
+        <div class="alert alert-{{ mensagem.tags|default:'info' }} alert-dismissible fade show" role="alert">
+            {{ mensagem }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
 {% if mensagem %}
     <div class="alert alert-info">{{ mensagem }}</div>
 {% endif %}
+
+<!-- Cabeçalho -->
 <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
     <div>
         <h1 class="h2 fw-bold mb-1">Clientes</h1>
@@ -30,6 +41,7 @@
                 <label for="pesquisa" class="form-label">
                     Pesquisar cliente
                 </label>
+
                 <input
                     type="search"
                     name="q"
@@ -49,7 +61,7 @@
     </div>
 </div>
 
-<!-- Tabela -->
+<!-- Tabela de clientes -->
 <div class="card shadow-sm">
     <div class="card-body">
         <div class="table-responsive">
@@ -69,6 +81,7 @@
                         <td>{{ cliente.nome }}</td>
                         <td>{{ cliente.telefone|default:"—" }}</td>
                         <td>{{ cliente.email|default:"—" }}</td>
+
                         <td class="text-end">
                             <a
                                 href="{% url 'assistencia:cliente_detalhes' cliente.pk %}"
@@ -84,18 +97,33 @@
                                 Editar
                             </a>
 
-                            <a
-                                href="{% url 'assistencia:cliente_excluir' cliente.pk %}"
-                                class="btn btn-sm btn-outline-danger"
+                            <!-- Exclusão realizada por POST -->
+                            <form
+                                method="post"
+                                action="{% url 'assistencia:cliente_excluir' cliente.pk %}"
+                                class="d-inline"
+                                onsubmit="return confirm('Tem certeza que deseja excluir este cliente?');"
                             >
-                                Excluir
-                            </a>
+                                {% csrf_token %}
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-sm btn-outline-danger"
+                                >
+                                    Excluir
+                                </button>
+                            </form>
                         </td>
                     </tr>
+
                     {% empty %}
                     <tr>
                         <td colspan="4" class="text-center text-muted py-4">
-                            Nenhum cliente cadastrado.
+                            {% if request.GET.q %}
+                                Nenhum cliente encontrado para essa pesquisa.
+                            {% else %}
+                                Nenhum cliente cadastrado.
+                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}

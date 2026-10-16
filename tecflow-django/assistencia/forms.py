@@ -1,3 +1,4 @@
+
 # assistencia/forms.py
 
 from decimal import Decimal
@@ -5,19 +6,100 @@ from decimal import Decimal
 from django import forms
 from django.db.models import Q
 
-from .models import Equipamento, OrdemServico, Pagamento, Tecnico
+from .models import (
+    Cliente,
+    Equipamento,
+    OrdemServico,
+    Pagamento,
+    Tecnico,
+)
 
 
 # Formatos enviados pelo campo datetime-local do navegador
-FORMATOS_DATA_HORA = ['%Y-%m-%dT%H:%M', '%Y-%m-%dT%H:%M:%S']
+FORMATOS_DATA_HORA = [
+    '%Y-%m-%dT%H:%M',
+    '%Y-%m-%dT%H:%M:%S',
+]
 
 
-# Campo de data e hora do navegador (o format permite preencher na edição)
+# Campo de data e hora do navegador
 def campo_data_hora():
     return forms.DateTimeInput(
-        attrs={'class': 'form-control', 'type': 'datetime-local'},
+        attrs={
+            'class': 'form-control',
+            'type': 'datetime-local',
+        },
         format=FORMATOS_DATA_HORA[0],
     )
+
+
+# Formulário de cliente
+class ClienteForm(forms.ModelForm):
+
+    class Meta:
+        model = Cliente
+
+        fields = [
+            'nome',
+            'telefone',
+            'email',
+            'endereco',
+        ]
+
+        labels = {
+            'nome': 'Nome completo',
+            'telefone': 'Telefone',
+            'email': 'E-mail',
+            'endereco': 'Endereço',
+        }
+
+        widgets = {
+            'nome': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Nome completo do cliente',
+                'autofocus': True,
+            }),
+            'telefone': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': '(00) 00000-0000',
+                'type': 'tel',
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'nome@email.com',
+            }),
+            'endereco': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Rua, número, bairro e cidade',
+            }),
+        }
+
+    def clean_nome(self):
+        nome = self.cleaned_data['nome'].strip()
+
+        if not nome:
+            raise forms.ValidationError(
+                'Informe o nome do cliente.'
+            )
+
+        return nome
+
+    def clean_telefone(self):
+        telefone = self.cleaned_data['telefone'].strip()
+
+        if not telefone:
+            raise forms.ValidationError(
+                'Informe o telefone do cliente.'
+            )
+
+        return telefone
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email', '').strip().lower()
+        return email
+
+    def clean_endereco(self):
+        return self.cleaned_data.get('endereco', '').strip()
 
 
 # Formulário de equipamento baseado no model
@@ -26,7 +108,6 @@ class EquipamentoForm(forms.ModelForm):
     class Meta:
         model = Equipamento
 
-        # Campos que serão exibidos no formulário
         fields = [
             'cliente',
             'tipo',
@@ -36,7 +117,6 @@ class EquipamentoForm(forms.ModelForm):
             'descricao',
         ]
 
-        # Rótulos dos campos
         labels = {
             'cliente': 'Cliente',
             'tipo': 'Tipo de equipamento',
@@ -46,10 +126,13 @@ class EquipamentoForm(forms.ModelForm):
             'descricao': 'Descrição',
         }
 
-        # Aparência dos campos com Bootstrap
         widgets = {
-            'cliente': forms.Select(attrs={'class': 'form-select'}),
-            'tipo': forms.Select(attrs={'class': 'form-select'}),
+            'cliente': forms.Select(attrs={
+                'class': 'form-select',
+            }),
+            'tipo': forms.Select(attrs={
+                'class': 'form-select',
+            }),
             'marca': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Ex.: Samsung',
@@ -71,6 +154,7 @@ class EquipamentoForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
         self.fields['cliente'].empty_label = 'Selecione um cliente'
         self.fields['tipo'].choices = [
             ('', 'Selecione o tipo'),
@@ -129,6 +213,7 @@ class TecnicoForm(forms.ModelForm):
         email = self.cleaned_data['email'].strip().lower()
 
         outros = Tecnico.objects.filter(email__iexact=email)
+
         if self.instance.pk:
             outros = outros.exclude(pk=self.instance.pk)
 
@@ -176,8 +261,12 @@ class OrdemServicoForm(forms.ModelForm):
         }
 
         widgets = {
-            'equipamento': forms.Select(attrs={'class': 'form-select'}),
-            'tecnico': forms.Select(attrs={'class': 'form-select'}),
+            'equipamento': forms.Select(attrs={
+                'class': 'form-select',
+            }),
+            'tecnico': forms.Select(attrs={
+                'class': 'form-select',
+            }),
             'descricao_problema': forms.Textarea(attrs={
                 'class': 'form-control',
                 'rows': 3,
@@ -188,8 +277,12 @@ class OrdemServicoForm(forms.ModelForm):
                 'rows': 3,
                 'placeholder': 'Informe o diagnóstico, se já houver...',
             }),
-            'status': forms.Select(attrs={'class': 'form-select'}),
-            'prioridade': forms.Select(attrs={'class': 'form-select'}),
+            'status': forms.Select(attrs={
+                'class': 'form-select',
+            }),
+            'prioridade': forms.Select(attrs={
+                'class': 'form-select',
+            }),
             'orcamento': forms.NumberInput(attrs={
                 'class': 'form-control',
                 'step': '0.01',
@@ -208,20 +301,28 @@ class OrdemServicoForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         # Aceita o formato enviado pelo campo datetime-local
-        for nome in ('data_entrada', 'data_previsao', 'data_saida'):
+        for nome in (
+            'data_entrada',
+            'data_previsao',
+            'data_saida',
+        ):
             self.fields[nome].input_formats = FORMATOS_DATA_HORA
 
-        # Somente técnicos ativos recebem ordens; na edição, o técnico
-        # já vinculado continua disponível mesmo que esteja inativo
+        # Somente técnicos ativos recebem ordens.
+        # Na edição, o técnico já vinculado continua disponível.
+        tecnico_atual_id = getattr(self.instance, 'tecnico_id', None)
+
         self.fields['tecnico'].queryset = Tecnico.objects.filter(
-            Q(ativo=True) | Q(pk=self.instance.tecnico_id)
+            Q(ativo=True) | Q(pk=tecnico_atual_id)
         )
         self.fields['tecnico'].empty_label = 'Não atribuído'
 
         self.fields['equipamento'].queryset = (
             Equipamento.objects.select_related('cliente')
         )
-        self.fields['equipamento'].empty_label = 'Selecione um equipamento'
+        self.fields['equipamento'].empty_label = (
+            'Selecione um equipamento'
+        )
 
     # O banco exige orçamento maior que zero (ou vazio)
     def clean_orcamento(self):
@@ -258,14 +359,18 @@ class PagamentoForm(forms.ModelForm):
         }
 
         widgets = {
-            'ordem_servico': forms.Select(attrs={'class': 'form-select'}),
+            'ordem_servico': forms.Select(attrs={
+                'class': 'form-select',
+            }),
             'valor': forms.NumberInput(attrs={
                 'class': 'form-control',
                 'min': '0.01',
                 'step': '0.01',
                 'placeholder': '0,00',
             }),
-            'forma_pagamento': forms.Select(attrs={'class': 'form-select'}),
+            'forma_pagamento': forms.Select(attrs={
+                'class': 'form-select',
+            }),
             'data_pagamento': campo_data_hora(),
             'observacao': forms.Textarea(attrs={
                 'class': 'form-control',

@@ -1,105 +1,137 @@
 
-# Importações
-from django.shortcuts import render
+# assistencia/views.py
+
+from django.contrib import messages
+from django.db.models import Q
+from django.shortcuts import render, redirect, get_object_or_404
+from django.views.decorators.http import require_POST
+from django.db.models.deletion import ProtectedError
+
+from .forms import ClienteForm
+from .models import (
+    Cliente,
+    Equipamento,
+    OrdemServico,
+    Pagamento,
+)
 
 
 # Dashboard
 def dashboard(request):
-    # Dados enviados para o template
     contexto = {
         'titulo': 'Dashboard',
     }
 
-    # Exibe a página principal
     return render(request, 'assistencia/dashboard.html', contexto)
 
 
 # Lista de clientes
 def clientes_lista(request):
-    # Lista vazia até a integração com os models
+    pesquisa = request.GET.get('q', '').strip()
+
+    clientes = Cliente.objects.all()
+
+    if pesquisa:
+        clientes = clientes.filter(
+            Q(nome__icontains=pesquisa)
+            | Q(telefone__icontains=pesquisa)
+            | Q(email__icontains=pesquisa)
+        )
+
     contexto = {
-        'clientes': [],
-        'mensagem': 'O cadastro de clientes será disponibilizado após a integração do banco de dados.',
+        'clientes': clientes,
     }
 
-    # Exibe a lista de clientes
     return render(request, 'assistencia/clientes/lista.html', contexto)
 
 
 # Cadastro de clientes
 def cliente_criar(request):
-    # Página temporária até a criação dos forms
+    if request.method == 'POST':
+        form = ClienteForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Cliente cadastrado com sucesso.')
+            return redirect('assistencia:clientes_lista')
+    else:
+        form = ClienteForm()
+
     contexto = {
         'titulo': 'Cadastrar cliente',
-        'mensagem': 'O formulário será conectado após a criação dos models e forms.',
+        'form': form,
     }
 
-    return render(request, 'assistencia/clientes/formulario.html', contexto)
+    return render(
+        request,
+        'assistencia/clientes/formulario.html',
+        contexto,
+    )
 
 
 # Detalhes do cliente
 def cliente_detalhes(request, pk):
-    # Página temporária até a integração com o banco
+    cliente = get_object_or_404(Cliente, pk=pk)
+
     contexto = {
-        'mensagem': 'Os detalhes estarão disponíveis após a integração do banco de dados.',
+        'cliente': cliente,
     }
 
-    return render(request, 'assistencia/clientes/detalhes.html', contexto)
+    return render(
+        request,
+        'assistencia/clientes/detalhes.html',
+        contexto,
+    )
 
 
 # Edição de clientes
 def cliente_editar(request, pk):
-    # Página temporária até a criação dos forms
+    cliente = get_object_or_404(Cliente, pk=pk)
+
+    if request.method == 'POST':
+        form = ClienteForm(request.POST, instance=cliente)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Cliente atualizado com sucesso.')
+            return redirect('assistencia:cliente_detalhes', pk=cliente.pk)
+    else:
+        form = ClienteForm(instance=cliente)
+
     contexto = {
         'titulo': 'Editar cliente',
-        'mensagem': 'A edição será disponibilizada após a integração dos models e forms.',
+        'cliente': cliente,
+        'form': form,
     }
 
-    return render(request, 'assistencia/clientes/formulario.html', contexto)
+    return render(
+        request,
+        'assistencia/clientes/formulario.html',
+        contexto,
+    )
 
 
 # Exclusão de clientes
+@require_POST
 def cliente_excluir(request, pk):
-    # Página temporária até a integração com o banco
-    contexto = {
-        'mensagem': 'A exclusão será disponibilizada após a integração do banco de dados.',
-    }
+    cliente = get_object_or_404(Cliente, pk=pk)
 
-    return render(request, 'assistencia/clientes/detalhes.html', contexto)
+    try:
+        cliente.delete()
+        messages.success(request, 'Cliente excluído com sucesso.')
+    except ProtectedError:
+        messages.error(
+            request,
+            'Não foi possível excluir este cliente porque existem '
+            'equipamentos vinculados a ele.',
+        )
 
-# assistencia/views.py
-
-from django.shortcuts import render
+    return redirect('assistencia:clientes_lista')
 
 
-# Lista de equipamentos — dados fictícios para visualização
+# Lista de equipamentos
 def equipamentos_lista(request):
-    equipamentos = [
-        {
-            'id': 1,
-            'cliente': 'João da Silva',
-            'tipo': 'Celular',
-            'marca': 'Samsung',
-            'modelo': 'Galaxy A54',
-            'numero_serie': 'SN123456',
-        },
-        {
-            'id': 2,
-            'cliente': 'Maria Oliveira',
-            'tipo': 'Notebook',
-            'marca': 'Dell',
-            'modelo': 'Inspiron 15',
-            'numero_serie': 'SN789012',
-        },
-        {
-            'id': 3,
-            'cliente': 'Pedro Santos',
-            'tipo': 'Computador',
-            'marca': 'Lenovo',
-            'modelo': 'IdeaCentre',
-            'numero_serie': 'SN345678',
-        },
-    ]
+    equipamentos = Equipamento.objects.select_related('cliente').all()
 
     contexto = {
         'equipamentos': equipamentos,
@@ -112,7 +144,7 @@ def equipamentos_lista(request):
     )
 
 
-# Formulário visual de cadastro
+# Cadastro de equipamentos
 def equipamento_criar(request):
     contexto = {
         'titulo': 'Cadastrar equipamento',
@@ -126,18 +158,12 @@ def equipamento_criar(request):
     )
 
 
-# Detalhes de um equipamento fictício
+# Detalhes do equipamento
 def equipamento_detalhes(request, pk):
-    equipamento = {
-        'id': pk,
-        'cliente': 'João da Silva',
-        'tipo': 'Celular',
-        'marca': 'Samsung',
-        'modelo': 'Galaxy A54',
-        'numero_serie': 'SN123456',
-        'descricao': 'Equipamento recebido para avaliação técnica.',
-        'data_cadastro': '16/10/2026',
-    }
+    equipamento = get_object_or_404(
+        Equipamento.objects.select_related('cliente'),
+        pk=pk,
+    )
 
     contexto = {
         'equipamento': equipamento,
@@ -150,11 +176,14 @@ def equipamento_detalhes(request, pk):
     )
 
 
-# Formulário visual de edição
+# Edição de equipamentos
 def equipamento_editar(request, pk):
+    equipamento = get_object_or_404(Equipamento, pk=pk)
+
     contexto = {
         'titulo': 'Editar equipamento',
         'modo': 'editar',
+        'equipamento': equipamento,
         'equipamento_id': pk,
     }
 
@@ -164,48 +193,14 @@ def equipamento_editar(request, pk):
         contexto,
     )
 
-# assistencia/views.py
 
-# Lista visual de Ordens de Serviço
+# Lista de ordens de serviço
 def ordens_servico_lista(request):
-    ordens_servico = [
-        {
-            'id': 1,
-            'equipamento': 'Samsung Galaxy A54',
-            'cliente': 'João da Silva',
-            'tecnico': 'Carlos Mendes',
-            'status': 'EM_REPARO',
-            'status_label': 'Em reparo',
-            'prioridade': 'ALTA',
-            'prioridade_label': 'Alta',
-            'orcamento': '250,00',
-            'data_entrada': '16/10/2026',
-        },
-        {
-            'id': 2,
-            'equipamento': 'Dell Inspiron 15',
-            'cliente': 'Maria Oliveira',
-            'tecnico': 'Ana Costa',
-            'status': 'EM_ANALISE',
-            'status_label': 'Em análise',
-            'prioridade': 'NORMAL',
-            'prioridade_label': 'Normal',
-            'orcamento': '180,00',
-            'data_entrada': '15/10/2026',
-        },
-        {
-            'id': 3,
-            'equipamento': 'Lenovo IdeaCentre',
-            'cliente': 'Pedro Santos',
-            'tecnico': None,
-            'status': 'RECEBIDA',
-            'status_label': 'Recebida',
-            'prioridade': 'URGENTE',
-            'prioridade_label': 'Urgente',
-            'orcamento': None,
-            'data_entrada': '14/10/2026',
-        },
-    ]
+    ordens_servico = OrdemServico.objects.select_related(
+        'equipamento',
+        'equipamento__cliente',
+        'tecnico',
+    ).all()
 
     contexto = {
         'ordens_servico': ordens_servico,
@@ -218,7 +213,7 @@ def ordens_servico_lista(request):
     )
 
 
-# Formulário visual para cadastro de ordem
+# Cadastro de ordem de serviço
 def ordem_servico_criar(request):
     contexto = {
         'titulo': 'Nova Ordem de Serviço',
@@ -232,25 +227,16 @@ def ordem_servico_criar(request):
     )
 
 
-# Detalhes de uma ordem fictícia
+# Detalhes da ordem de serviço
 def ordem_servico_detalhes(request, pk):
-    ordem = {
-        'id': pk,
-        'equipamento': 'Samsung Galaxy A54',
-        'cliente': 'João da Silva',
-        'tecnico': 'Carlos Mendes',
-        'descricao_problema': 'Equipamento não está carregando corretamente.',
-        'diagnostico': 'Conector de carregamento precisa ser avaliado.',
-        'status': 'EM_REPARO',
-        'status_label': 'Em reparo',
-        'prioridade': 'ALTA',
-        'prioridade_label': 'Alta',
-        'orcamento': '250,00',
-        'orcamento_aprovado': False,
-        'data_entrada': '16/10/2026 às 09:30',
-        'data_previsao': '20/10/2026 às 17:00',
-        'data_saida': None,
-    }
+    ordem = get_object_or_404(
+        OrdemServico.objects.select_related(
+            'equipamento',
+            'equipamento__cliente',
+            'tecnico',
+        ),
+        pk=pk,
+    )
 
     contexto = {
         'ordem': ordem,
@@ -263,11 +249,14 @@ def ordem_servico_detalhes(request, pk):
     )
 
 
-# Formulário visual para edição de ordem
+# Edição de ordem de serviço
 def ordem_servico_editar(request, pk):
+    ordem = get_object_or_404(OrdemServico, pk=pk)
+
     contexto = {
         'titulo': 'Editar Ordem de Serviço',
         'modo': 'editar',
+        'ordem': ordem,
         'ordem_id': pk,
     }
 
@@ -277,42 +266,14 @@ def ordem_servico_editar(request, pk):
         contexto,
     )
 
-# assistencia/views.py
 
-# Lista visual de pagamentos
+# Lista de pagamentos
 def pagamentos_lista(request):
-    pagamentos = [
-        {
-            'id': 1,
-            'ordem_id': 1,
-            'equipamento': 'Samsung Galaxy A54',
-            'cliente': 'João da Silva',
-            'valor': '250,00',
-            'forma_pagamento': 'PIX',
-            'forma_label': 'Pix',
-            'data_pagamento': '16/10/2026',
-        },
-        {
-            'id': 2,
-            'ordem_id': 2,
-            'equipamento': 'Dell Inspiron 15',
-            'cliente': 'Maria Oliveira',
-            'valor': '180,00',
-            'forma_pagamento': 'CREDITO',
-            'forma_label': 'Cartão de crédito',
-            'data_pagamento': '15/10/2026',
-        },
-        {
-            'id': 3,
-            'ordem_id': 1,
-            'equipamento': 'Samsung Galaxy A54',
-            'cliente': 'João da Silva',
-            'valor': '100,00',
-            'forma_pagamento': 'DINHEIRO',
-            'forma_label': 'Dinheiro',
-            'data_pagamento': '14/10/2026',
-        },
-    ]
+    pagamentos = Pagamento.objects.select_related(
+        'ordem_servico',
+        'ordem_servico__equipamento',
+        'ordem_servico__equipamento__cliente',
+    ).all()
 
     contexto = {
         'pagamentos': pagamentos,
@@ -325,7 +286,7 @@ def pagamentos_lista(request):
     )
 
 
-# Formulário visual de cadastro
+# Cadastro de pagamento
 def pagamento_criar(request):
     contexto = {
         'titulo': 'Registrar pagamento',
@@ -339,19 +300,16 @@ def pagamento_criar(request):
     )
 
 
-# Detalhes de um pagamento fictício
+# Detalhes do pagamento
 def pagamento_detalhes(request, pk):
-    pagamento = {
-        'id': pk,
-        'ordem_id': 1,
-        'equipamento': 'Samsung Galaxy A54',
-        'cliente': 'João da Silva',
-        'valor': '250,00',
-        'forma_pagamento': 'PIX',
-        'forma_label': 'Pix',
-        'data_pagamento': '16/10/2026 às 10:30',
-        'observacao': 'Pagamento de demonstração.',
-    }
+    pagamento = get_object_or_404(
+        Pagamento.objects.select_related(
+            'ordem_servico',
+            'ordem_servico__equipamento',
+            'ordem_servico__equipamento__cliente',
+        ),
+        pk=pk,
+    )
 
     contexto = {
         'pagamento': pagamento,
@@ -364,11 +322,14 @@ def pagamento_detalhes(request, pk):
     )
 
 
-# Formulário visual de edição
+# Edição de pagamento
 def pagamento_editar(request, pk):
+    pagamento = get_object_or_404(Pagamento, pk=pk)
+
     contexto = {
         'titulo': 'Editar pagamento',
         'modo': 'editar',
+        'pagamento': pagamento,
         'pagamento_id': pk,
     }
 
