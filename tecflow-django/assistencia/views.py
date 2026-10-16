@@ -66,3 +66,100 @@ def cliente_excluir(request, pk):
     }
 
     return render(request, 'assistencia/clientes/detalhes.html', contexto)
+
+# assistencia/views.py
+
+from django.shortcuts import render
+
+
+# Lista de equipamentos — dados fictícios para visualização
+def equipamentos_lista(request):
+    equipamentos = [
+        {
+            'id': 1,
+            'cliente': 'João da Silva',
+            'tipo': 'Celular',
+            'marca': 'Samsung',
+            'modelo': 'Galaxy A54',
+            'numero_serie': 'SN123456',
+        },
+        {
+            'id': 2,
+            'cliente': 'Maria Oliveira',
+            'tipo': 'Notebook',
+            'marca': 'Dell',
+            'modelo': 'Inspiron 15',
+            'numero_serie': 'SN789012',
+        },
+        {
+            'id': 3,
+            'cliente': 'Pedro Santos',
+            'tipo': 'Computador',
+            'marca': 'Lenovo',
+            'modelo': 'IdeaCentre',
+            'numero_serie': 'SN345678',
+        },
+    ]
+
+    contexto = {
+        'equipamentos': equipamentos,
+    }
+
+    return render(
+        request,
+        'assistencia/equipamentos/lista.html',
+        contexto,
+    )
+
+
+# Formulário visual de cadastro
+def equipamento_criar(request):
+    contexto = {
+        'titulo': 'Cadastrar equipamento',
+        'modo': 'criar',
+    }
+
+    return render(
+        request,
+        'assistencia/equipamentos/formulario.html',
+        contexto,
+    )
+
+
+# Detalhes de um equipamento fictício
+def equipamento_detalhes(request, pk):
+    equipamento = {
+        'id': pk,
+        'cliente': 'João da Silva',
+        'tipo': 'Celular',
+        'marca': 'Samsung',
+        'modelo': 'Galaxy A54',
+        'numero_serie': 'SN123456',
+        'descricao': 'Equipamento recebido para avaliação técnica.',
+        'data_cadastro': '16/10/2026',
+    }
+
+    contexto = {
+        'equipamento': equipamento,
+    }
+
+    return render(
+        request,
+        'assistencia/equipamentos/detalhes.html',
+        contexto,
+    )
+
+
+# Formulário visual de edição
+def equipamento_editar(request, pk):
+    contexto = {
+        'titulo': 'Editar equipamento',
+        'modo': 'editar',
+        'equipamento_id': pk,
+    }
+
+    return render(
+        request,
+        'assistencia/equipamentos/formulario.html',
+        contexto,
+    )
