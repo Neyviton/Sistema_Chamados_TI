@@ -1,6 +1,6 @@
-{% extends 'base.html' %}
+{% extends 'assistencia/base.html' %}
 
-{% block title %}{{ titulo|default:"Equipamento" }} | TecFlow{% endblock %}
+{% block title %}{{ titulo }} | TecFlow{% endblock %}
 
 {% block content %}
 
@@ -24,15 +24,12 @@
 <div class="card border-0 shadow-sm">
     <div class="card-body p-4">
 
-        <form method="post" novalidate>
-            {% csrf_token %}
+        <!-- Aviso de demonstração -->
+        <div class="alert alert-info" role="status">
+            Formulário visual: as informações não serão salvas nesta etapa.
+        </div>
 
-            <!-- Erros gerais do formulário -->
-            {% if form.non_field_errors %}
-                <div class="alert alert-danger" role="alert">
-                    {{ form.non_field_errors }}
-                </div>
-            {% endif %}
+        <form>
 
             <!-- Dados principais do equipamento -->
             <h2 class="h5 mb-3">Dados do equipamento</h2>
@@ -41,71 +38,77 @@
 
                 <!-- Cliente responsável -->
                 <div class="col-md-6">
-                    <label for="{{ form.cliente.id_for_label }}" class="form-label">
-                        {{ form.cliente.label }}
-                        {% if form.cliente.field.required %}<span class="text-danger">*</span>{% endif %}
+                    <label for="cliente" class="form-label">
+                        Cliente <span class="text-danger">*</span>
                     </label>
 
-                    {{ form.cliente }}
-
-                    {% for erro in form.cliente.errors %}
-                        <div class="text-danger small mt-1">{{ erro }}</div>
-                    {% endfor %}
+                    <select id="cliente" name="cliente" class="form-select">
+                        <option value="">Selecione um cliente</option>
+                        <option value="1">João da Silva</option>
+                        <option value="2">Maria Oliveira</option>
+                        <option value="3">Pedro Santos</option>
+                    </select>
                 </div>
 
                 <!-- Tipo de equipamento -->
                 <div class="col-md-6">
-                    <label for="{{ form.tipo.id_for_label }}" class="form-label">
-                        {{ form.tipo.label }}
-                        {% if form.tipo.field.required %}<span class="text-danger">*</span>{% endif %}
+                    <label for="tipo" class="form-label">
+                        Tipo de equipamento <span class="text-danger">*</span>
                     </label>
 
-                    {{ form.tipo }}
-
-                    {% for erro in form.tipo.errors %}
-                        <div class="text-danger small mt-1">{{ erro }}</div>
-                    {% endfor %}
+                    <select id="tipo" name="tipo" class="form-select">
+                        <option value="">Selecione o tipo</option>
+                        <option value="CELULAR">Celular</option>
+                        <option value="NOTEBOOK">Notebook</option>
+                        <option value="COMPUTADOR">Computador</option>
+                        <option value="TELEVISAO">Televisão</option>
+                        <option value="OUTRO">Outro</option>
+                    </select>
                 </div>
 
                 <!-- Marca -->
                 <div class="col-md-6">
-                    <label for="{{ form.marca.id_for_label }}" class="form-label">
-                        {{ form.marca.label }}
-                        {% if form.marca.field.required %}<span class="text-danger">*</span>{% endif %}
+                    <label for="marca" class="form-label">
+                        Marca <span class="text-danger">*</span>
                     </label>
 
-                    {{ form.marca }}
-
-                    {% for erro in form.marca.errors %}
-                        <div class="text-danger small mt-1">{{ erro }}</div>
-                    {% endfor %}
+                    <input
+                        type="text"
+                        id="marca"
+                        name="marca"
+                        class="form-control"
+                        placeholder="Ex.: Samsung"
+                    >
                 </div>
 
                 <!-- Modelo -->
                 <div class="col-md-6">
-                    <label for="{{ form.modelo.id_for_label }}" class="form-label">
-                        {{ form.modelo.label }}
-                        {% if form.modelo.field.required %}<span class="text-danger">*</span>{% endif %}
+                    <label for="modelo" class="form-label">
+                        Modelo <span class="text-danger">*</span>
                     </label>
 
-                    {{ form.modelo }}
-
-                    {% for erro in form.modelo.errors %}
-                        <div class="text-danger small mt-1">{{ erro }}</div>
-                    {% endfor %}
+                    <input
+                        type="text"
+                        id="modelo"
+                        name="modelo"
+                        class="form-control"
+                        placeholder="Ex.: Galaxy A54"
+                    >
                 </div>
 
                 <!-- Número de série -->
                 <div class="col-12">
-                    <label for="{{ form.numero_serie.id_for_label }}" class="form-label">
-                        {{ form.numero_serie.label }}
+                    <label for="numero_serie" class="form-label">
+                        Número de série
                     </label>
 
-                    {{ form.numero_serie }}
-
-                    {% for erro in form.numero_serie.errors %}
-                        <div class="text-danger small mt-1">{{ erro }}</div>
-                    {% endfor %}
+                    <input
+                        type="text"
+                        id="numero_serie"
+                        name="numero_serie"
+                        class="form-control"
+                        placeholder="Informe o número de série, se disponível"
+                    >
 
                     <div class="form-text">
                         Campo opcional.
@@ -114,15 +117,17 @@
 
                 <!-- Descrição -->
                 <div class="col-12">
-                    <label for="{{ form.descricao.id_for_label }}" class="form-label">
-                        {{ form.descricao.label }}
+                    <label for="descricao" class="form-label">
+                        Descrição
                     </label>
 
-                    {{ form.descricao }}
-
-                    {% for erro in form.descricao.errors %}
-                        <div class="text-danger small mt-1">{{ erro }}</div>
-                    {% endfor %}
+                    <textarea
+                        id="descricao"
+                        name="descricao"
+                        class="form-control"
+                        rows="4"
+                        placeholder="Informe detalhes relevantes do equipamento..."
+                    ></textarea>
                 </div>
 
             </div>
@@ -138,7 +143,7 @@
                     Cancelar
                 </a>
 
-                <button type="submit" class="btn btn-primary">
+                <button type="button" class="btn btn-primary">
                     Salvar equipamento
                 </button>
             </div>
