@@ -1,0 +1,244 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ titulo|default:"Ordem de Serviço" }} | TecFlow{% endblock %}
+
+{% block content %}
+
+<!-- Cabeçalho e navegação -->
+<div class="mb-4">
+    <a
+        href="{% url 'assistencia:ordens_servico_lista' %}"
+        class="text-decoration-none small"
+    >
+        &larr; Voltar para Ordens de Serviço
+    </a>
+
+    <h1 class="h3 mt-2 mb-1">{{ titulo }}</h1>
+
+    <p class="text-muted mb-0">
+        Preencha as informações do atendimento técnico.
+    </p>
+</div>
+
+<!-- Formulário principal -->
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            <!-- Erros gerais do formulário -->
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <!-- Identificação do equipamento -->
+            <h2 class="h5 mb-3">Identificação</h2>
+
+            <div class="row g-3">
+
+                <!-- Equipamento -->
+                <div class="col-md-6">
+                    <label for="{{ form.equipamento.id_for_label }}" class="form-label">
+                        {{ form.equipamento.label }}
+                        {% if form.equipamento.field.required %}<span class="text-danger">*</span>{% endif %}
+                    </label>
+
+                    {{ form.equipamento }}
+
+                    {% for erro in form.equipamento.errors %}
+                        <div class="text-danger small mt-1">{{ erro }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Técnico -->
+                <div class="col-md-6">
+                    <label for="{{ form.tecnico.id_for_label }}" class="form-label">
+                        {{ form.tecnico.label }}
+                    </label>
+
+                    {{ form.tecnico }}
+
+                    {% for erro in form.tecnico.errors %}
+                        <div class="text-danger small mt-1">{{ erro }}</div>
+                    {% endfor %}
+
+                    <div class="form-text">
+                        Somente técnicos ativos podem receber ordens.
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Informações do atendimento -->
+            <hr class="my-4">
+
+            <h2 class="h5 mb-3">Atendimento técnico</h2>
+
+            <div class="row g-3">
+
+                <!-- Problema relatado -->
+                <div class="col-12">
+                    <label for="{{ form.descricao_problema.id_for_label }}" class="form-label">
+                        {{ form.descricao_problema.label }}
+                        {% if form.descricao_problema.field.required %}<span class="text-danger">*</span>{% endif %}
+                    </label>
+
+                    {{ form.descricao_problema }}
+
+                    {% for erro in form.descricao_problema.errors %}
+                        <div class="text-danger small mt-1">{{ erro }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Diagnóstico -->
+                <div class="col-12">
+                    <label for="{{ form.diagnostico.id_for_label }}" class="form-label">
+                        {{ form.diagnostico.label }}
+                    </label>
+
+                    {{ form.diagnostico }}
+
+                    {% for erro in form.diagnostico.errors %}
+                        <div class="text-danger small mt-1">{{ erro }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Status -->
+                <div class="col-md-6">
+                    <label for="{{ form.status.id_for_label }}" class="form-label">
+                        {{ form.status.label }}
+                    </label>
+
+                    {{ form.status }}
+
+                    {% for erro in form.status.errors %}
+                        <div class="text-danger small mt-1">{{ erro }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Prioridade -->
+                <div class="col-md-6">
+                    <label for="{{ form.prioridade.id_for_label }}" class="form-label">
+                        {{ form.prioridade.label }}
+                    </label>
+
+                    {{ form.prioridade }}
+
+                    {% for erro in form.prioridade.errors %}
+                        <div class="text-danger small mt-1">{{ erro }}</div>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+            <!-- Orçamento -->
+            <hr class="my-4">
+
+            <h2 class="h5 mb-3">Orçamento</h2>
+
+            <div class="row g-3">
+
+                <!-- Valor -->
+                <div class="col-md-6">
+                    <label for="{{ form.orcamento.id_for_label }}" class="form-label">
+                        {{ form.orcamento.label }}
+                    </label>
+
+                    {{ form.orcamento }}
+
+                    {% for erro in form.orcamento.errors %}
+                        <div class="text-danger small mt-1">{{ erro }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Aprovação -->
+                <div class="col-md-6">
+                    <div class="form-check mt-md-4">
+                        {{ form.orcamento_aprovado }}
+
+                        <label for="{{ form.orcamento_aprovado.id_for_label }}"
+                               class="form-check-label">
+                            {{ form.orcamento_aprovado.label }}
+                        </label>
+                    </div>
+
+                    {% for erro in form.orcamento_aprovado.errors %}
+                        <div class="text-danger small mt-1">{{ erro }}</div>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+            <!-- Datas da ordem -->
+            <hr class="my-4">
+
+            <h2 class="h5 mb-3">Datas</h2>
+
+            <div class="row g-3">
+
+                <!-- Entrada -->
+                <div class="col-md-4">
+                    <label for="{{ form.data_entrada.id_for_label }}" class="form-label">
+                        {{ form.data_entrada.label }}
+                        {% if form.data_entrada.field.required %}<span class="text-danger">*</span>{% endif %}
+                    </label>
+
+                    {{ form.data_entrada }}
+
+                    {% for erro in form.data_entrada.errors %}
+                        <div class="text-danger small mt-1">{{ erro }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Previsão -->
+                <div class="col-md-4">
+                    <label for="{{ form.data_previsao.id_for_label }}" class="form-label">
+                        {{ form.data_previsao.label }}
+                    </label>
+
+                    {{ form.data_previsao }}
+
+                    {% for erro in form.data_previsao.errors %}
+                        <div class="text-danger small mt-1">{{ erro }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Saída -->
+                <div class="col-md-4">
+                    <label for="{{ form.data_saida.id_for_label }}" class="form-label">
+                        {{ form.data_saida.label }}
+                    </label>
+
+                    {{ form.data_saida }}
+
+                    {% for erro in form.data_saida.errors %}
+                        <div class="text-danger small mt-1">{{ erro }}</div>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+            <!-- Botões do formulário -->
+            <hr class="my-4">
+
+            <div class="d-flex flex-wrap justify-content-end gap-2">
+                <a
+                    href="{% url 'assistencia:ordens_servico_lista' %}"
+                    class="btn btn-outline-secondary"
+                >
+                    Cancelar
+                </a>
+
+                <button type="submit" class="btn btn-primary">
+                    Salvar Ordem de Serviço
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+{% endblock %}

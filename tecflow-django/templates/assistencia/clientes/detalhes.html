@@ -1,0 +1,55 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Detalhes do cliente | TecFlow{% endblock %}
+
+{% block content %}
+
+<!-- Cabeçalho -->
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+    <div>
+        <h1 class="h2 fw-bold mb-1">Detalhes do cliente</h1>
+        <p class="text-muted mb-0">
+            Consulte as informações cadastradas.
+        </p>
+    </div>
+
+    <a href="{% url 'assistencia:clientes_lista' %}"
+       class="btn btn-outline-secondary">
+        Voltar para clientes
+    </a>
+</div>
+
+<!-- Informações do cliente -->
+{% if mensagem %}
+    <div class="alert alert-info">{{ mensagem }}</div>
+{% endif %}
+<div class="card shadow-sm">
+    <div class="card-body p-4">
+        <h2 class="h4 mb-4">{{ cliente.nome }}</h2>
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <strong>Telefone</strong>
+                <p>{{ cliente.telefone|default:"Não informado" }}</p>
+            </div>
+
+            <div class="col-md-6">
+                <strong>E-mail</strong>
+                <p>{{ cliente.email|default:"Não informado" }}</p>
+            </div>
+
+            <div class="col-12">
+                <strong>Endereço</strong>
+                <p>{{ cliente.endereco|default:"Não informado" }}</p>
+            </div>
+        </div>
+
+        <a href="{% url 'assistencia:cliente_editar' cliente.pk %}"
+           class="btn btn-primary">
+            Editar cliente
+        </a>
+    </div>
+</div>
+
+{% endblock %}

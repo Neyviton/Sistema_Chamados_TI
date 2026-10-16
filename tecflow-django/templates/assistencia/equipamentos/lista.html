@@ -1,0 +1,148 @@
+{% extends 'assistencia/base.html' %}
+
+{% block title %}Equipamentos | TecFlow{% endblock %}
+
+{% block content %}
+
+<!-- Cabeçalho da página -->
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">Equipamentos</h1>
+        <p class="text-muted mb-0">
+            Gerencie os equipamentos cadastrados no sistema.
+        </p>
+    </div>
+
+    <!-- Botão para cadastrar equipamento -->
+    <a href="{% url 'assistencia:equipamento_criar' %}"
+       class="btn btn-primary">
+        + Novo equipamento
+    </a>
+</div>
+
+<!-- Área de pesquisa visual -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <form method="get">
+            <div class="row g-3 align-items-end">
+
+                <!-- Campo de pesquisa -->
+                <div class="col-md-9">
+                    <label for="pesquisa" class="form-label">
+                        Pesquisar equipamento
+                    </label>
+                    <input
+                        type="search"
+                        class="form-control"
+                        id="pesquisa"
+                        name="q"
+                        placeholder="Marca, modelo, cliente ou número de série"
+                    >
+                </div>
+
+                <!-- Botão de pesquisa -->
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-outline-primary w-100">
+                        Pesquisar
+                    </button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Tabela de equipamentos -->
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+
+        <!-- Título e quantidade de registros -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h5 mb-0">Equipamentos cadastrados</h2>
+            <span class="badge text-bg-secondary">
+                {{ equipamentos|length }} registros de exemplo
+            </span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+
+                <!-- Cabeçalho da tabela -->
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Equipamento</th>
+                        <th scope="col">Cliente</th>
+                        <th scope="col">Tipo</th>
+                        <th scope="col">Nº de série</th>
+                        <th scope="col" class="text-end">Ações</th>
+                    </tr>
+                </thead>
+
+                <!-- Dados da tabela -->
+                <tbody>
+                    {% for equipamento in equipamentos %}
+                    <tr>
+                        <td>
+                            <div class="fw-semibold">
+                                {{ equipamento.marca }} {{ equipamento.modelo }}
+                            </div>
+                        </td>
+
+                        <td>{{ equipamento.cliente }}</td>
+
+                        <td>
+                            <span class="badge text-bg-light border">
+                                {{ equipamento.tipo }}
+                            </span>
+                        </td>
+
+                        <td>{{ equipamento.numero_serie }}</td>
+
+                        <!-- Ações de cada equipamento -->
+                        <td class="text-end">
+                            <div class="d-inline-flex gap-2">
+                                <a
+                                    href="{% url 'assistencia:equipamento_detalhes' equipamento.id %}"
+                                    class="btn btn-sm btn-outline-secondary"
+                                >
+                                    Ver
+                                </a>
+
+                                <a
+                                    href="{% url 'assistencia:equipamento_editar' equipamento.id %}"
+                                    class="btn btn-sm btn-outline-primary"
+                                >
+                                    Editar
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+
+                    {% empty %}
+
+                    <!-- Mensagem para lista vazia -->
+                    <tr>
+                        <td colspan="5" class="text-center py-4">
+                            <p class="text-muted mb-1">
+                                Nenhum equipamento para exibir.
+                            </p>
+                            <small>
+                                Os registros aparecerão aqui quando forem integrados.
+                            </small>
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Aviso sobre os dados de demonstração -->
+        <div class="alert alert-info mt-4 mb-0" role="status">
+            Esta tela utiliza dados fictícios para demonstração.
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

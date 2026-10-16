@@ -1,0 +1,26 @@
+# Ambiente virtual
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Banco local
+db.sqlite3
+
+# Variáveis de ambiente
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# Sistema operacional
+.DS_Store
+
+# Arquivos estáticos coletados
+staticfiles/
+
+assistencia/migrations/

@@ -1,0 +1,212 @@
+{% extends 'assistencia/base.html' %}
+
+{% block title %}Ordens de Serviço | TecFlow{% endblock %}
+
+{% block content %}
+
+<!-- Cabeçalho da página -->
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">Ordens de Serviço</h1>
+        <p class="text-muted mb-0">
+            Acompanhe os serviços e os reparos dos equipamentos.
+        </p>
+    </div>
+
+    <!-- Botão de cadastro -->
+    <a href="{% url 'assistencia:ordem_servico_criar' %}"
+       class="btn btn-primary">
+        + Nova ordem
+    </a>
+</div>
+
+<!-- Pesquisa visual -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <form method="get">
+            <div class="row g-3 align-items-end">
+
+                <!-- Campo de pesquisa -->
+                <div class="col-md-9">
+                    <label for="pesquisa" class="form-label">
+                        Pesquisar ordem
+                    </label>
+
+                    <input
+                        type="search"
+                        id="pesquisa"
+                        name="q"
+                        class="form-control"
+                        placeholder="Equipamento, cliente ou técnico"
+                    >
+                </div>
+
+                <!-- Botão de pesquisa -->
+                <div class="col-md-3">
+                    <button type="submit"
+                            class="btn btn-outline-primary w-100">
+                        Pesquisar
+                    </button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Tabela de Ordens de Serviço -->
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+
+        <!-- Título da tabela -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h5 mb-0">Ordens registradas</h2>
+
+            <span class="badge text-bg-secondary">
+                {{ ordens_servico|length }} registros de exemplo
+            </span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+
+                <!-- Cabeçalho -->
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Nº</th>
+                        <th scope="col">Equipamento / Cliente</th>
+                        <th scope="col">Técnico</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Prioridade</th>
+                        <th scope="col">Orçamento</th>
+                        <th scope="col" class="text-end">Ações</th>
+                    </tr>
+                </thead>
+
+                <!-- Registros -->
+                <tbody>
+                    {% for ordem in ordens_servico %}
+                    <tr>
+
+                        <!-- Identificação -->
+                        <td class="fw-semibold">
+                            #{{ ordem.id }}
+                        </td>
+
+                        <!-- Equipamento e cliente -->
+                        <td>
+                            <div class="fw-semibold">
+                                {{ ordem.equipamento }}
+                            </div>
+                            <small class="text-muted">
+                                {{ ordem.cliente }}
+                            </small>
+                        </td>
+
+                        <!-- Técnico responsável -->
+                        <td>
+                            {{ ordem.tecnico|default:"Não atribuído" }}
+                        </td>
+
+                        <!-- Status -->
+                        <td>
+                            {% if ordem.status == 'CONCLUIDA' or ordem.status == 'ENTREGUE' %}
+                                <span class="badge text-bg-success">
+                                    {{ ordem.status_label }}
+                                </span>
+                            {% elif ordem.status == 'CANCELADA' %}
+                                <span class="badge text-bg-danger">
+                                    {{ ordem.status_label }}
+                                </span>
+                            {% elif ordem.status == 'EM_REPARO' %}
+                                <span class="badge text-bg-primary">
+                                    {{ ordem.status_label }}
+                                </span>
+                            {% elif ordem.status == 'AGUARDANDO_PECAS' or ordem.status == 'AGUARDANDO_APROVACAO' %}
+                                <span class="badge text-bg-warning">
+                                    {{ ordem.status_label }}
+                                </span>
+                            {% else %}
+                                <span class="badge text-bg-secondary">
+                                    {{ ordem.status_label }}
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Prioridade -->
+                        <td>
+                            {% if ordem.prioridade == 'URGENTE' %}
+                                <span class="badge text-bg-danger">
+                                    {{ ordem.prioridade_label }}
+                                </span>
+                            {% elif ordem.prioridade == 'ALTA' %}
+                                <span class="badge text-bg-warning">
+                                    {{ ordem.prioridade_label }}
+                                </span>
+                            {% else %}
+                                <span class="badge text-bg-light border">
+                                    {{ ordem.prioridade_label }}
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Orçamento -->
+                        <td>
+                            {% if ordem.orcamento %}
+                                R$ {{ ordem.orcamento }}
+                            {% else %}
+                                <span class="text-muted">
+                                    Não definido
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Ações -->
+                        <td class="text-end">
+                            <div class="d-inline-flex gap-2">
+                                <a
+                                    href="{% url 'assistencia:ordem_servico_detalhes' ordem.id %}"
+                                    class="btn btn-sm btn-outline-secondary"
+                                >
+                                    Ver
+                                </a>
+
+                                <a
+                                    href="{% url 'assistencia:ordem_servico_editar' ordem.id %}"
+                                    class="btn btn-sm btn-outline-primary"
+                                >
+                                    Editar
+                                </a>
+                            </div>
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <!-- Estado vazio -->
+                    <tr>
+                        <td colspan="7" class="text-center py-4">
+                            <p class="text-muted mb-1">
+                                Nenhuma Ordem de Serviço para exibir.
+                            </p>
+                            <small>
+                                As ordens aparecerão aqui quando os dados forem integrados.
+                            </small>
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Aviso de demonstração -->
+        <div class="alert alert-info mt-4 mb-0" role="status">
+            Esta tela utiliza dados fictícios para demonstração.
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ titulo|default:"Técnico" }} | TecFlow{% endblock %}
+
+{% block content %}
+
+<!-- A rota da lista de técnicos ainda não existe: sem ela, volta ao dashboard -->
+{% url 'assistencia:tecnicos_lista' as url_lista %}
+
+<!-- Cabeçalho da página -->
+<div class="mb-4">
+    <a
+        href="{% if url_lista %}{{ url_lista }}{% else %}{% url 'assistencia:dashboard' %}{% endif %}"
+        class="text-decoration-none small"
+    >
+        &larr; Voltar
+    </a>
+
+    <h1 class="h3 mt-2 mb-1">{{ titulo|default:"Técnico" }}</h1>
+
+    <p class="text-muted mb-0">
+        Preencha as informações do técnico.
+    </p>
+</div>
+
+<!-- Formulário de técnico -->
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            <!-- Erros gerais do formulário -->
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <!-- Dados do técnico -->
+            <h2 class="h5 mb-3">Dados do técnico</h2>
+
+            <div class="row g-3">
+
+                <!-- Nome -->
+                <div class="col-12">
+                    <label for="{{ form.nome.id_for_label }}" class="form-label">
+                        {{ form.nome.label }}
+                        {% if form.nome.field.required %}<span class="text-danger">*</span>{% endif %}
+                    </label>
+
+                    {{ form.nome }}
+
+                    {% for erro in form.nome.errors %}
+                        <div class="text-danger small mt-1">{{ erro }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- E-mail -->
+                <div class="col-md-6">
+                    <label for="{{ form.email.id_for_label }}" class="form-label">
+                        {{ form.email.label }}
+                        {% if form.email.field.required %}<span class="text-danger">*</span>{% endif %}
+                    </label>
+
+                    {{ form.email }}
+
+                    {% for erro in form.email.errors %}
+                        <div class="text-danger small mt-1">{{ erro }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Telefone -->
+                <div class="col-md-6">
+                    <label for="{{ form.telefone.id_for_label }}" class="form-label">
+                        {{ form.telefone.label }}
+                        {% if form.telefone.field.required %}<span class="text-danger">*</span>{% endif %}
+                    </label>
+
+                    {{ form.telefone }}
+
+                    {% for erro in form.telefone.errors %}
+                        <div class="text-danger small mt-1">{{ erro }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Especialidade -->
+                <div class="col-12">
+                    <label for="{{ form.especialidade.id_for_label }}" class="form-label">
+                        {{ form.especialidade.label }}
+                        {% if form.especialidade.field.required %}<span class="text-danger">*</span>{% endif %}
+                    </label>
+
+                    {{ form.especialidade }}
+
+                    {% for erro in form.especialidade.errors %}
+                        <div class="text-danger small mt-1">{{ erro }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Situação -->
+                <div class="col-12">
+                    <div class="form-check">
+                        {{ form.ativo }}
+
+                        <label for="{{ form.ativo.id_for_label }}"
+                               class="form-check-label">
+                            {{ form.ativo.label }}
+                        </label>
+                    </div>
+
+                    {% for erro in form.ativo.errors %}
+                        <div class="text-danger small mt-1">{{ erro }}</div>
+                    {% endfor %}
+
+                    <div class="form-text">
+                        Somente técnicos ativos podem receber novas ordens.
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Botões do formulário -->
+            <hr class="my-4">
+
+            <div class="d-flex flex-wrap justify-content-end gap-2">
+                <a
+                    href="{% if url_lista %}{{ url_lista }}{% else %}{% url 'assistencia:dashboard' %}{% endif %}"
+                    class="btn btn-outline-secondary"
+                >
+                    Cancelar
+                </a>
+
+                <button type="submit" class="btn btn-primary">
+                    Salvar técnico
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+{% endblock %}
