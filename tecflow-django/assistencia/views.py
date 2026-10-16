@@ -277,3 +277,103 @@ def ordem_servico_editar(request, pk):
         contexto,
     )
 
+# assistencia/views.py
+
+# Lista visual de pagamentos
+def pagamentos_lista(request):
+    pagamentos = [
+        {
+            'id': 1,
+            'ordem_id': 1,
+            'equipamento': 'Samsung Galaxy A54',
+            'cliente': 'João da Silva',
+            'valor': '250,00',
+            'forma_pagamento': 'PIX',
+            'forma_label': 'Pix',
+            'data_pagamento': '16/10/2026',
+        },
+        {
+            'id': 2,
+            'ordem_id': 2,
+            'equipamento': 'Dell Inspiron 15',
+            'cliente': 'Maria Oliveira',
+            'valor': '180,00',
+            'forma_pagamento': 'CREDITO',
+            'forma_label': 'Cartão de crédito',
+            'data_pagamento': '15/10/2026',
+        },
+        {
+            'id': 3,
+            'ordem_id': 1,
+            'equipamento': 'Samsung Galaxy A54',
+            'cliente': 'João da Silva',
+            'valor': '100,00',
+            'forma_pagamento': 'DINHEIRO',
+            'forma_label': 'Dinheiro',
+            'data_pagamento': '14/10/2026',
+        },
+    ]
+
+    contexto = {
+        'pagamentos': pagamentos,
+    }
+
+    return render(
+        request,
+        'assistencia/pagamentos/lista.html',
+        contexto,
+    )
+
+
+# Formulário visual de cadastro
+def pagamento_criar(request):
+    contexto = {
+        'titulo': 'Registrar pagamento',
+        'modo': 'criar',
+    }
+
+    return render(
+        request,
+        'assistencia/pagamentos/formulario.html',
+        contexto,
+    )
+
+
+# Detalhes de um pagamento fictício
+def pagamento_detalhes(request, pk):
+    pagamento = {
+        'id': pk,
+        'ordem_id': 1,
+        'equipamento': 'Samsung Galaxy A54',
+        'cliente': 'João da Silva',
+        'valor': '250,00',
+        'forma_pagamento': 'PIX',
+        'forma_label': 'Pix',
+        'data_pagamento': '16/10/2026 às 10:30',
+        'observacao': 'Pagamento de demonstração.',
+    }
+
+    contexto = {
+        'pagamento': pagamento,
+    }
+
+    return render(
+        request,
+        'assistencia/pagamentos/detalhes.html',
+        contexto,
+    )
+
+
+# Formulário visual de edição
+def pagamento_editar(request, pk):
+    contexto = {
+        'titulo': 'Editar pagamento',
+        'modo': 'editar',
+        'pagamento_id': pk,
+    }
+
+    return render(
+        request,
+        'assistencia/pagamentos/formulario.html',
+        contexto,
+    )

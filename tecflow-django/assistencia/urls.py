@@ -63,4 +63,27 @@ path(
     views.ordem_servico_editar,
     name='ordem_servico_editar',
 ),
+
+# Rotas de Pagamentos
+path(
+    'pagamentos/',
+    views.pagamentos_lista,
+    name='pagamentos_lista',
+),
+path(
+    'pagamentos/novo/',
+    views.pagamento_criar,
+    name='pagamento_criar',
+),
+path(
+    'pagamentos/<int:pk>/',
+    views.pagamento_detalhes,
+    name='pagamento_detalhes',
+),
+path(
+    'pagamentos/<int:pk>/editar/',
+    views.pagamento_editar,
+    name='pagamento_editar',
+),
 ]
+

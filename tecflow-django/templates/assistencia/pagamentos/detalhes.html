@@ -1,0 +1,170 @@
+{% extends 'assistencia/base.html' %}
+
+{% block title %}Pagamento #{{ pagamento.id }} | TecFlow{% endblock %}
+
+{% block content %}
+
+<!-- Cabeçalho e navegação -->
+<div class="mb-4">
+    <a
+        href="{% url 'assistencia:pagamentos_lista' %}"
+        class="text-decoration-none small"
+    >
+        &larr; Voltar para pagamentos
+    </a>
+
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mt-2">
+        <div>
+            <h1 class="h3 mb-1">
+                Pagamento #{{ pagamento.id }}
+            </h1>
+
+            <p class="text-muted mb-0">
+                Detalhes do registro financeiro.
+            </p>
+        </div>
+
+        <!-- Ação de edição -->
+        <a
+            href="{% url 'assistencia:pagamento_editar' pagamento.id %}"
+            class="btn btn-outline-primary"
+        >
+            Editar pagamento
+        </a>
+    </div>
+</div>
+
+<!-- Resumo financeiro -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+
+        <span class="text-muted small d-block mb-2">
+            Valor registrado
+        </span>
+
+        <h2 class="display-6 fw-semibold mb-3">
+            R$ {{ pagamento.valor }}
+        </h2>
+
+        <span class="badge text-bg-light border">
+            {{ pagamento.forma_label }}
+        </span>
+
+        <hr class="my-4">
+
+        <!-- Informações principais -->
+        <div class="row g-4">
+
+            <!-- Número do pagamento -->
+            <div class="col-md-6">
+                <span class="text-muted small d-block mb-1">
+                    Código do pagamento
+                </span>
+
+                <span class="fw-semibold">
+                    #{{ pagamento.id }}
+                </span>
+            </div>
+
+            <!-- Data -->
+            <div class="col-md-6">
+                <span class="text-muted small d-block mb-1">
+                    Data do pagamento
+                </span>
+
+                <span class="fw-semibold">
+                    {{ pagamento.data_pagamento }}
+                </span>
+            </div>
+
+            <!-- Forma -->
+            <div class="col-md-6">
+                <span class="text-muted small d-block mb-1">
+                    Forma de pagamento
+                </span>
+
+                <span class="fw-semibold">
+                    {{ pagamento.forma_label }}
+                </span>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- Ordem de Serviço relacionada -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+
+        <h2 class="h5 mb-3">Ordem de Serviço relacionada</h2>
+
+        <div class="row g-4">
+
+            <!-- Identificação da ordem -->
+            <div class="col-md-6">
+                <span class="text-muted small d-block mb-1">
+                    Número da ordem
+                </span>
+
+                <span class="fw-semibold">
+                    #{{ pagamento.ordem_id }}
+                </span>
+            </div>
+
+            <!-- Equipamento -->
+            <div class="col-md-6">
+                <span class="text-muted small d-block mb-1">
+                    Equipamento
+                </span>
+
+                <span class="fw-semibold">
+                    {{ pagamento.equipamento }}
+                </span>
+            </div>
+
+            <!-- Cliente -->
+            <div class="col-md-6">
+                <span class="text-muted small d-block mb-1">
+                    Cliente
+                </span>
+
+                <span class="fw-semibold">
+                    {{ pagamento.cliente }}
+                </span>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- Observações do pagamento -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+
+        <h2 class="h5 mb-3">Observações</h2>
+
+        <p class="mb-0">
+            {{ pagamento.observacao|default:"Nenhuma observação registrada." }}
+        </p>
+
+    </div>
+</div>
+
+<!-- Aviso sobre dados fictícios -->
+<div class="alert alert-info" role="status">
+    Esta página utiliza informações fictícias para demonstração.
+</div>
+
+<!-- Navegação inferior -->
+<div class="d-flex justify-content-end">
+    <a
+        href="{% url 'assistencia:pagamentos_lista' %}"
+        class="btn btn-outline-secondary"
+    >
+        Voltar para a lista
+    </a>
+</div>
+
+{% endblock %}

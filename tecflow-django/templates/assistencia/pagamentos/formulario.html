@@ -1,0 +1,171 @@
+{% extends 'assistencia/base.html' %}
+
+{% block title %}{{ titulo }} | TecFlow{% endblock %}
+
+{% block content %}
+
+<!-- Cabeçalho e navegação -->
+<div class="mb-4">
+    <a
+        href="{% url 'assistencia:pagamentos_lista' %}"
+        class="text-decoration-none small"
+    >
+        &larr; Voltar para pagamentos
+    </a>
+
+    <h1 class="h3 mt-2 mb-1">{{ titulo }}</h1>
+
+    <p class="text-muted mb-0">
+        Preencha as informações do pagamento.
+    </p>
+</div>
+
+<!-- Formulário de pagamento -->
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+
+        <!-- Aviso sobre o modo visual -->
+        <div class="alert alert-info" role="status">
+            Formulário visual: as informações não serão salvas nesta etapa.
+        </div>
+
+        <form>
+
+            <!-- Identificação da Ordem de Serviço -->
+            <h2 class="h5 mb-3">Ordem de Serviço</h2>
+
+            <div class="row g-3">
+
+                <!-- Ordem relacionada -->
+                <div class="col-12">
+                    <label for="ordem_servico" class="form-label">
+                        Ordem de Serviço <span class="text-danger">*</span>
+                    </label>
+
+                    <select
+                        id="ordem_servico"
+                        name="ordem_servico"
+                        class="form-select"
+                    >
+                        <option value="">Selecione uma Ordem de Serviço</option>
+                        <option value="1">
+                            #1 — Samsung Galaxy A54 — João da Silva
+                        </option>
+                        <option value="2">
+                            #2 — Dell Inspiron 15 — Maria Oliveira
+                        </option>
+                    </select>
+
+                    <div class="form-text">
+                        Selecione a ordem à qual este pagamento pertence.
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Informações financeiras -->
+            <hr class="my-4">
+
+            <h2 class="h5 mb-3">Dados do pagamento</h2>
+
+            <div class="row g-3">
+
+                <!-- Valor -->
+                <div class="col-md-6">
+                    <label for="valor" class="form-label">
+                        Valor do pagamento (R$)
+                        <span class="text-danger">*</span>
+                    </label>
+
+                    <div class="input-group">
+                        <span class="input-group-text">R$</span>
+
+                        <input
+                            type="number"
+                            id="valor"
+                            name="valor"
+                            class="form-control"
+                            min="0.01"
+                            step="0.01"
+                            placeholder="0,00"
+                        >
+                    </div>
+
+                    <div class="form-text">
+                        O valor deve respeitar o orçamento aprovado da ordem.
+                    </div>
+                </div>
+
+                <!-- Forma de pagamento -->
+                <div class="col-md-6">
+                    <label for="forma_pagamento" class="form-label">
+                        Forma de pagamento
+                        <span class="text-danger">*</span>
+                    </label>
+
+                    <select
+                        id="forma_pagamento"
+                        name="forma_pagamento"
+                        class="form-select"
+                    >
+                        <option value="">Selecione a forma</option>
+                        <option value="DINHEIRO">Dinheiro</option>
+                        <option value="PIX">Pix</option>
+                        <option value="CREDITO">Cartão de crédito</option>
+                        <option value="DEBITO">Cartão de débito</option>
+                        <option value="OUTRO">Outro</option>
+                    </select>
+                </div>
+
+                <!-- Data do pagamento -->
+                <div class="col-12">
+                    <label for="data_pagamento" class="form-label">
+                        Data do pagamento
+                    </label>
+
+                    <input
+                        type="datetime-local"
+                        id="data_pagamento"
+                        name="data_pagamento"
+                        class="form-control"
+                    >
+                </div>
+
+                <!-- Observações -->
+                <div class="col-12">
+                    <label for="observacao" class="form-label">
+                        Observações
+                    </label>
+
+                    <textarea
+                        id="observacao"
+                        name="observacao"
+                        class="form-control"
+                        rows="3"
+                        placeholder="Informações adicionais sobre o pagamento..."
+                    ></textarea>
+                </div>
+
+            </div>
+
+            <!-- Botões do formulário -->
+            <hr class="my-4">
+
+            <div class="d-flex flex-wrap justify-content-end gap-2">
+                <a
+                    href="{% url 'assistencia:pagamentos_lista' %}"
+                    class="btn btn-outline-secondary"
+                >
+                    Cancelar
+                </a>
+
+                <button type="button" class="btn btn-primary">
+                    Salvar pagamento
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+{% endblock %}
