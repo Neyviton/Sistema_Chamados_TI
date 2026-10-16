@@ -85,5 +85,30 @@ path(
     views.pagamento_editar,
     name='pagamento_editar',
 ),
+
+# Rotas da área de técnicos
+path(
+    'tecnicos/',
+    views.tecnicos_lista,
+    name='tecnicos_lista'
+),
+
+path(
+    'tecnicos/novo/',
+    views.tecnico_criar,
+    name='tecnico_criar'
+),
+
+path(
+    'tecnicos/<int:pk>/',
+    views.tecnico_detalhes,
+    name='tecnico_detalhes'
+),
+
+path(
+    'tecnicos/<int:pk>/editar/',
+    views.tecnico_editar,
+    name='tecnico_editar'
+),
 ]
 

@@ -1,0 +1,124 @@
+
+{% extends 'assistencia/base.html' %}
+
+{% block title %}Detalhes do técnico | TecFlow{% endblock %}
+
+{% block content %}
+
+<!-- Verifica se o técnico existe -->
+{% if tecnico %}
+
+<!-- Cabeçalho da página -->
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">Detalhes do técnico</h1>
+        <p class="text-muted mb-0">
+            Informações completas do profissional.
+        </p>
+    </div>
+
+    <!-- Botões de navegação -->
+    <div class="d-flex gap-2">
+        <a href="{% url 'assistencia:tecnicos_lista' %}"
+           class="btn btn-outline-secondary">
+            Voltar
+        </a>
+
+        <a href="{% url 'assistencia:tecnico_editar' tecnico.id %}"
+           class="btn btn-primary">
+            Editar técnico
+        </a>
+    </div>
+</div>
+
+<!-- Cartão com os dados do técnico -->
+<div class="card shadow-sm">
+    <div class="card-body p-4">
+
+        <!-- Nome e situação -->
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+            <div>
+                <h2 class="h4 mb-1">{{ tecnico.nome }}</h2>
+                <p class="text-muted mb-0">
+                    Técnico #{{ tecnico.id }}
+                </p>
+            </div>
+
+            {% if tecnico.ativo %}
+                <span class="badge text-bg-success fs-6">
+                    Ativo
+                </span>
+            {% else %}
+                <span class="badge text-bg-secondary fs-6">
+                    Inativo
+                </span>
+            {% endif %}
+        </div>
+
+        <hr>
+
+        <!-- Informações de contato -->
+        <h3 class="h5 mb-3">Contato</h3>
+
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <small class="text-muted d-block mb-1">E-mail</small>
+                <p class="mb-0">{{ tecnico.email }}</p>
+            </div>
+
+            <div class="col-md-6">
+                <small class="text-muted d-block mb-1">Telefone</small>
+                <p class="mb-0">{{ tecnico.telefone }}</p>
+            </div>
+        </div>
+
+        <hr>
+
+        <!-- Informações profissionais -->
+        <h3 class="h5 mb-3">Informações profissionais</h3>
+
+        <div class="row g-4">
+            <div class="col-md-6">
+                <small class="text-muted d-block mb-1">
+                    Especialidade
+                </small>
+                <p class="mb-0">{{ tecnico.especialidade }}</p>
+            </div>
+
+            <div class="col-md-6">
+                <small class="text-muted d-block mb-1">
+                    Situação do cadastro
+                </small>
+
+                {% if tecnico.ativo %}
+                    <p class="mb-0">Ativo</p>
+                {% else %}
+                    <p class="mb-0">Inativo</p>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% else %}
+
+<!-- Mensagem quando o técnico não é encontrado -->
+<div class="card shadow-sm">
+    <div class="card-body text-center py-5">
+        <h1 class="h4 mb-2">Técnico não encontrado</h1>
+
+        <p class="text-muted">
+            Não foi possível localizar o técnico solicitado.
+        </p>
+
+        <a href="{% url 'assistencia:tecnicos_lista' %}"
+           class="btn btn-primary">
+            Voltar para técnicos
+        </a>
+    </div>
+</div>
+
+{% endif %}
+
+{% endblock %}

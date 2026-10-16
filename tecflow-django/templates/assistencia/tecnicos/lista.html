@@ -1,0 +1,128 @@
+
+{% extends 'assistencia/base.html' %}
+
+{% block title %}Técnicos | TecFlow{% endblock %}
+
+{% block content %}
+
+<!-- Cabeçalho da página -->
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">Técnicos</h1>
+        <p class="text-muted mb-0">
+            Gerencie os técnicos da assistência técnica.
+        </p>
+    </div>
+
+    <!-- Botão para cadastrar técnico -->
+    <a href="{% url 'assistencia:tecnico_criar' %}"
+       class="btn btn-primary">
+        + Novo técnico
+    </a>
+</div>
+
+<!-- Campo de pesquisa visual -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form method="get">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-9">
+                    <label for="busca" class="form-label">
+                        Pesquisar técnico
+                    </label>
+                    <input type="text"
+                           class="form-control"
+                           id="busca"
+                           name="busca"
+                           placeholder="Digite o nome ou a especialidade">
+                </div>
+
+                <div class="col-md-3">
+                    <button type="button"
+                            class="btn btn-outline-primary w-100">
+                        Pesquisar
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Tabela de técnicos -->
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+
+                <!-- Cabeçalho da tabela -->
+                <thead class="table-light">
+                    <tr>
+                        <th>Nome</th>
+                        <th>Especialidade</th>
+                        <th>Telefone</th>
+                        <th>Situação</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+
+                <!-- Dados dos técnicos -->
+                <tbody>
+                    {% for tecnico in tecnicos %}
+                    <tr>
+                        <td>
+                            <div class="fw-semibold">
+                                {{ tecnico.nome }}
+                            </div>
+                            <small class="text-muted">
+                                {{ tecnico.email }}
+                            </small>
+                        </td>
+
+                        <td>{{ tecnico.especialidade }}</td>
+                        <td>{{ tecnico.telefone }}</td>
+
+                        <!-- Indicador de situação -->
+                        <td>
+                            {% if tecnico.ativo %}
+                                <span class="badge text-bg-success">
+                                    Ativo
+                                </span>
+                            {% else %}
+                                <span class="badge text-bg-secondary">
+                                    Inativo
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Ações disponíveis -->
+                        <td class="text-end text-nowrap">
+                            <a href="{% url 'assistencia:tecnico_detalhes' tecnico.id %}"
+                               class="btn btn-sm btn-outline-primary">
+                                Detalhes
+                            </a>
+
+                            <a href="{% url 'assistencia:tecnico_editar' tecnico.id %}"
+                               class="btn btn-sm btn-outline-secondary">
+                                Editar
+                            </a>
+                        </td>
+                    </tr>
+
+                    <!-- Mensagem caso não existam técnicos -->
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-4">
+                            <p class="text-muted mb-0">
+                                Nenhum técnico encontrado.
+                            </p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

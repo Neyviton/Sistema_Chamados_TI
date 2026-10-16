@@ -331,3 +331,45 @@ class PagamentoForm(forms.ModelForm):
                 'placeholder': 'Informações adicionais sobre o pagamento...',
             }),
         }
+
+# Formulário para cadastro e edição de técnicos
+from .models import Equipamento, OrdemServico, Pagamento, Tecnico
+
+class TecnicoForm(forms.ModelForm):
+
+    class Meta:
+        model = Tecnico
+
+        fields = [
+            'nome',
+            'email',
+            'telefone',
+            'especialidade',
+            'ativo',
+        ]
+
+        widgets = {
+            'nome': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Nome completo do técnico',
+            }),
+
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'tecnico@exemplo.com',
+            }),
+
+            'telefone': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': '(00) 00000-0000',
+            }),
+
+            'especialidade': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ex.: Manutenção de notebooks',
+            }),
+
+            'ativo': forms.CheckboxInput(attrs={
+                'class': 'form-check-input',
+            }),
+        }

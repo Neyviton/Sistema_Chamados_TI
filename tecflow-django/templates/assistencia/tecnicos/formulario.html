@@ -1,0 +1,118 @@
+
+{% extends 'assistencia/base.html' %}
+
+{% block title %}{{ titulo }} | TecFlow{% endblock %}
+
+{% block content %}
+
+<!-- Cabeçalho do formulário -->
+<div class="mb-4">
+    <h1 class="h3 mb-1">{{ titulo }}</h1>
+    <p class="text-muted mb-0">
+        Preencha os dados do técnico abaixo.
+    </p>
+</div>
+
+<!-- Formulário de cadastro ou edição -->
+<div class="card shadow-sm">
+    <div class="card-body p-4">
+
+        <form>
+
+            <!-- Informações pessoais -->
+            <h2 class="h5 mb-3">Informações do técnico</h2>
+
+            <div class="row g-3">
+
+                <!-- Nome completo -->
+                <div class="col-md-6">
+                    <label for="nome" class="form-label">
+                        Nome completo
+                    </label>
+                    <input type="text"
+                           class="form-control"
+                           id="nome"
+                           name="nome"
+                           placeholder="Digite o nome completo"
+                           value="{{ nome_tecnico|default:'' }}">
+                </div>
+
+                <!-- E-mail -->
+                <div class="col-md-6">
+                    <label for="email" class="form-label">
+                        E-mail
+                    </label>
+                    <input type="email"
+                           class="form-control"
+                           id="email"
+                           name="email"
+                           placeholder="tecnico@exemplo.com">
+                </div>
+
+                <!-- Telefone -->
+                <div class="col-md-6">
+                    <label for="telefone" class="form-label">
+                        Telefone
+                    </label>
+                    <input type="text"
+                           class="form-control"
+                           id="telefone"
+                           name="telefone"
+                           placeholder="(00) 00000-0000">
+                </div>
+
+                <!-- Especialidade -->
+                <div class="col-md-6">
+                    <label for="especialidade" class="form-label">
+                        Especialidade
+                    </label>
+                    <input type="text"
+                           class="form-control"
+                           id="especialidade"
+                           name="especialidade"
+                           placeholder="Ex.: Manutenção de celulares">
+                </div>
+
+            </div>
+
+            <!-- Situação do técnico -->
+            <hr class="my-4">
+
+            <h2 class="h5 mb-3">Situação</h2>
+
+            <div class="form-check">
+                <input class="form-check-input"
+                       type="checkbox"
+                       id="ativo"
+                       name="ativo"
+                       checked>
+
+                <label class="form-check-label" for="ativo">
+                    Técnico ativo
+                </label>
+            </div>
+
+            <small class="text-muted d-block mt-2">
+                Desmarque a opção para representar um técnico inativo.
+            </small>
+
+            <!-- Botões do formulário -->
+            <hr class="my-4">
+
+            <div class="d-flex justify-content-end gap-2">
+                <a href="{% url 'assistencia:tecnicos_lista' %}"
+                   class="btn btn-outline-secondary">
+                    Cancelar
+                </a>
+
+                <button type="button" class="btn btn-primary">
+                    Salvar técnico
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

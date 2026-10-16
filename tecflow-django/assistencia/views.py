@@ -377,3 +377,117 @@ def pagamento_editar(request, pk):
         'assistencia/pagamentos/formulario.html',
         contexto,
     )
+
+# Lista de técnicos
+def tecnicos_lista(request):
+    tecnicos = [
+        {
+            'id': 1,
+            'nome': 'Carlos Mendes',
+            'email': 'carlos@exemplo.com',
+            'telefone': '(86) 99999-1111',
+            'especialidade': 'Celulares',
+            'ativo': True,
+        },
+        {
+            'id': 2,
+            'nome': 'Ana Costa',
+            'email': 'ana@exemplo.com',
+            'telefone': '(86) 99999-2222',
+            'especialidade': 'Notebooks',
+            'ativo': True,
+        },
+        {
+            'id': 3,
+            'nome': 'Roberto Lima',
+            'email': 'roberto@exemplo.com',
+            'telefone': '(86) 99999-3333',
+            'especialidade': 'Computadores',
+            'ativo': False,
+        },
+    ]
+
+    return render(
+        request,
+        'assistencia/tecnicos/lista.html',
+        {'tecnicos': tecnicos}
+    )
+
+
+# Página de cadastro de técnico
+def tecnico_criar(request):
+    return render(
+        request,
+        'assistencia/tecnicos/formulario.html',
+        {
+            'titulo': 'Cadastrar técnico',
+            'modo': 'criar',
+        }
+    )
+
+
+# Detalhes de um técnico
+def tecnico_detalhes(request, pk):
+    tecnicos = {
+        1: {
+            'id': 1,
+            'nome': 'Carlos Mendes',
+            'email': 'carlos@exemplo.com',
+            'telefone': '(86) 99999-1111',
+            'especialidade': 'Celulares',
+            'ativo': True,
+        },
+        2: {
+            'id': 2,
+            'nome': 'Ana Costa',
+            'email': 'ana@exemplo.com',
+            'telefone': '(86) 99999-2222',
+            'especialidade': 'Notebooks',
+            'ativo': True,
+        },
+        3: {
+            'id': 3,
+            'nome': 'Roberto Lima',
+            'email': 'roberto@exemplo.com',
+            'telefone': '(86) 99999-3333',
+            'especialidade': 'Computadores',
+            'ativo': False,
+        },
+    }
+
+    tecnico = tecnicos.get(pk)
+
+    if tecnico is None:
+        return render(
+            request,
+            'assistencia/tecnicos/detalhes.html',
+            {'tecnico': None}
+        )
+
+    return render(
+        request,
+        'assistencia/tecnicos/detalhes.html',
+        {'tecnico': tecnico}
+    )
+
+
+# Página de edição de técnico
+def tecnico_editar(request, pk):
+    tecnicos = {
+        1: 'Carlos Mendes',
+        2: 'Ana Costa',
+        3: 'Roberto Lima',
+    }
+
+    nome = tecnicos.get(pk)
+
+    return render(
+        request,
+        'assistencia/tecnicos/formulario.html',
+        {
+            'titulo': 'Editar técnico',
+            'modo': 'editar',
+            'tecnico_id': pk,
+            'nome_tecnico': nome,
+        }
+    )
