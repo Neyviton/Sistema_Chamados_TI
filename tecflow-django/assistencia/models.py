@@ -22,7 +22,7 @@ class Cliente(models.Model):
     data_cadastro = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordeing = ["nome"]
+        ordering = ["nome"]
         verbose_name = "Cliente"
         verbose_name_plural = "Clientes"
 
@@ -179,3 +179,71 @@ class OrdemServico(models.Model):
 
     def __str__(self):
         return f"OS #{self.pk} - {self.equipamento}"
+
+# Criação model Pagamento
+class Pagamento(models.Model):
+    class FormaPagamento(models.TextChoices):
+        DINHEIRO = "DINHEIRO", "Dinheiro"
+        PIX = "PIX", "Pix"
+        CREDITO = "CREDITO", "Cartão de crédito"
+        DEBITO = "DEBITO", "Cartão de débito"
+        OUTRO = "OUTRO", "Outro"
+
+    ordem_servico = models.ForeignKey(
+        OrdemServico,
+        on_delete=models.PROTECT,
+        related_name="pagamentos",
+    )
+    valor = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        validators=[MinValueValidator(Decimal("0.01"))],
+    )
+    data_pagamento = models.DateTimeField(default=timezone.now)
+    forma_pagamento = models.CharField(
+        max_length=10,
+        choices=FormaPagamento.choices,
+    )
+    observacao = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ["-data_pagamento"]
+        verbose_name = "Pagamento"
+        verbose_name_plural = "Pagamentos"
+        constraints = [
+            models.CheckConstraint(
+                condition=Q(valor__gt=0),
+                name="pagamento_valor_maior_que_zero",
+            ),
+        ]
+
+    def clean(self):
+        super().clean()
+
+        if not self.ordem_servico_id or self.valor is None:
+            return
+
+        ordem = self.ordem_servico
+
+        if ordem.orcamento is None or not ordem.orcamento_aprovado:
+            raise ValidationError({
+                "ordem_servico": (
+                    "A ordem precisa ter um orçamento aprovado "
+                    "antes de receber pagamentos."
+                )
+            })
+
+        pagamentos_anteriores = ordem.pagamentos.exclude(
+            pk=self.pk
+        ).aggregate(total=Sum("valor"))["total"] or Decimal("0.00")
+
+        if pagamentos_anteriores + self.valor > ordem.orcamento:
+            raise ValidationError({
+                "valor": (
+                    "A soma dos pagamentos não pode ultrapassar "
+                    "o orçamento aprovado."
+                )
+            })
+
+    def __str__(self):
+        return f"Pagamento de R$ {self.valor} - OS #{self.ordem_servico_id}"
