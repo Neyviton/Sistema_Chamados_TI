@@ -88,3 +88,94 @@ class OrdemServico(models.Model):
         CONCLUIDA = "CONCLUIDA", "Concluída"
         ENTREGUE =  "ENTREGUE", "Entregue"
         CANCELADA = "CANCELADA", "Cancelada"
+
+    class Prioridade(models.TextChoices):
+        BAIXA = "BAIXA", "Baixa"
+        NORMAL = "NORMAL", "Normal"
+        ALTA = "ALTA", "Alta"
+        URGENTE = "URGENTE", "Urgente"
+
+    equipamento = models.ForeignKey(
+        Equipamento,
+        on_delete=models.PROTECT,
+        related_name="ordens_servico"
+    )
+
+    tecnico = models.ForeignKey(
+        Tecnico,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="ordens_servico",
+    )
+
+    descricao_problema = models.TextField()
+    diagnostico = models.TextField(blank=True)
+    status = models.CharField(
+        max_length=25,
+        choices=Status.choices, 
+        default=Status.RECEBIDA,)
+
+    prioridade = models.CharField(
+        max_length=10,
+        choices=Prioridade.choices,
+        default=Prioridade.NORMAL,
+    )
+
+    orcamento = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(Decimal("0.00"))],
+    )
+
+    orcamento_aprovado = models.BooleanField(default=False)
+    data_entrada = models.DateTimeField(default=timezone.now)
+    data_previsao = models.DateTimeField(null=True, blank=True)
+    data_saida = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-data_entrada"]
+        verbose_name = "Ordem de serviço"
+        verbose_name_plural = "Ordens de serviço"
+        constraints = [
+            models.CheckConstraint(
+                condition=Q(orcamento__get=0) | Q(orcamento__isnull=True),
+                name= "ordem_orcamento_nao_negativo",
+            ),
+        ]
+
+    def clean(self):
+        super().clean()
+        erros = {}
+
+        if self.data_previsao and self.data_entrada:
+            if self.data_previsao < self.data_entrada:
+                erros["data_previsao"] = (
+                    "A previsão não pode ser anterior à entrada."
+                )
+
+        if self.data_saida and self.data_entrada:
+            if self.data_saida < self.data_entrada:
+                erros["data_saida"] = (
+                    "A saída não pode ser anterior à entrada"
+                )
+
+        status_final = {
+            self.Status.CONCLUIDA,
+            self.Status.ENTREGUE,
+        }
+
+        if self.status in status_final:
+            if self.orcamento is None or not self.orcamento_aprovado:
+                erros["orcamento_aprovado"] = (
+                    "Informe um orçamento e registre sua aprovação "
+                    "antes de concluir ou entregar o equipemento."
+                )
+
+        if erros:
+            raise ValidationError(erros)
+
+    def __str__(self):
+        return f"OS #{self.pk} - {self.equipamento}"
