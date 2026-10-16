@@ -66,7 +66,6 @@ def cliente_excluir(request, pk):
     }
 
     return render(request, 'assistencia/clientes/detalhes.html', contexto)
-<<<<<<< HEAD
 
 # assistencia/views.py
 
@@ -277,6 +276,4 @@ def ordem_servico_editar(request, pk):
         'assistencia/ordens_servico/formulario.html',
         contexto,
     )
-=======
-    
->>>>>>> 905054acc3f381effd05f51418fc522fc3ba301a
+
