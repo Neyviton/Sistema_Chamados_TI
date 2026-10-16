@@ -1,0 +1,258 @@
+{% extends 'assistencia/base.html' %}
+
+{% block title %}Ordem de Serviço #{{ ordem.id }} | TecFlow{% endblock %}
+
+{% block content %}
+
+<!-- Cabeçalho e navegação -->
+<div class="mb-4">
+    <a
+        href="{% url 'assistencia:ordens_servico_lista' %}"
+        class="text-decoration-none small"
+    >
+        &larr; Voltar para Ordens de Serviço
+    </a>
+
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mt-2">
+        <div>
+            <h1 class="h3 mb-1">
+                Ordem de Serviço #{{ ordem.id }}
+            </h1>
+
+            <p class="text-muted mb-0">
+                Detalhes do atendimento técnico.
+            </p>
+        </div>
+
+        <!-- Ação de edição -->
+        <a
+            href="{% url 'assistencia:ordem_servico_editar' ordem.id %}"
+            class="btn btn-outline-primary"
+        >
+            Editar ordem
+        </a>
+    </div>
+</div>
+
+<!-- Resumo da ordem -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+
+        <!-- Status e prioridade -->
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+            <div>
+                <span class="text-muted small d-block mb-2">
+                    Status atual
+                </span>
+
+                {% if ordem.status == 'CONCLUIDA' or ordem.status == 'ENTREGUE' %}
+                    <span class="badge text-bg-success">
+                        {{ ordem.status_label }}
+                    </span>
+                {% elif ordem.status == 'CANCELADA' %}
+                    <span class="badge text-bg-danger">
+                        {{ ordem.status_label }}
+                    </span>
+                {% elif ordem.status == 'EM_REPARO' %}
+                    <span class="badge text-bg-primary">
+                        {{ ordem.status_label }}
+                    </span>
+                {% else %}
+                    <span class="badge text-bg-secondary">
+                        {{ ordem.status_label }}
+                    </span>
+                {% endif %}
+            </div>
+
+            <div>
+                <span class="text-muted small d-block mb-2">
+                    Prioridade
+                </span>
+
+                {% if ordem.prioridade == 'URGENTE' %}
+                    <span class="badge text-bg-danger">
+                        {{ ordem.prioridade_label }}
+                    </span>
+                {% elif ordem.prioridade == 'ALTA' %}
+                    <span class="badge text-bg-warning">
+                        {{ ordem.prioridade_label }}
+                    </span>
+                {% else %}
+                    <span class="badge text-bg-light border">
+                        {{ ordem.prioridade_label }}
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+
+        <hr>
+
+        <!-- Equipamento e cliente -->
+        <div class="row g-4">
+            <div class="col-md-6">
+                <span class="text-muted small d-block mb-1">
+                    Equipamento
+                </span>
+
+                <span class="fw-semibold">
+                    {{ ordem.equipamento }}
+                </span>
+            </div>
+
+            <div class="col-md-6">
+                <span class="text-muted small d-block mb-1">
+                    Cliente
+                </span>
+
+                <span class="fw-semibold">
+                    {{ ordem.cliente }}
+                </span>
+            </div>
+
+            <div class="col-md-6">
+                <span class="text-muted small d-block mb-1">
+                    Técnico responsável
+                </span>
+
+                <span class="fw-semibold">
+                    {{ ordem.tecnico|default:"Não atribuído" }}
+                </span>
+            </div>
+
+            <div class="col-md-6">
+                <span class="text-muted small d-block mb-1">
+                    Data de entrada
+                </span>
+
+                <span class="fw-semibold">
+                    {{ ordem.data_entrada }}
+                </span>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Descrição do problema e diagnóstico -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+
+        <h2 class="h5 mb-3">Informações do atendimento</h2>
+
+        <!-- Problema relatado -->
+        <div class="mb-4">
+            <h3 class="h6 text-muted">Descrição do problema</h3>
+
+            <p class="mb-0">
+                {{ ordem.descricao_problema|default:"Nenhuma descrição informada." }}
+            </p>
+        </div>
+
+        <!-- Diagnóstico técnico -->
+        <div>
+            <h3 class="h6 text-muted">Diagnóstico técnico</h3>
+
+            <p class="mb-0">
+                {{ ordem.diagnostico|default:"Diagnóstico ainda não informado." }}
+            </p>
+        </div>
+
+    </div>
+</div>
+
+<!-- Informações financeiras -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+
+        <h2 class="h5 mb-3">Orçamento</h2>
+
+        <div class="row g-4">
+
+            <!-- Valor do orçamento -->
+            <div class="col-md-6">
+                <span class="text-muted small d-block mb-1">
+                    Valor previsto
+                </span>
+
+                <span class="h4 mb-0">
+                    {% if ordem.orcamento %}
+                        R$ {{ ordem.orcamento }}
+                    {% else %}
+                        Não definido
+                    {% endif %}
+                </span>
+            </div>
+
+            <!-- Situação da aprovação -->
+            <div class="col-md-6">
+                <span class="text-muted small d-block mb-1">
+                    Aprovação do orçamento
+                </span>
+
+                {% if ordem.orcamento_aprovado %}
+                    <span class="badge text-bg-success">
+                        Aprovado
+                    </span>
+                {% else %}
+                    <span class="badge text-bg-warning">
+                        Pendente
+                    </span>
+                {% endif %}
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- Datas de acompanhamento -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+
+        <h2 class="h5 mb-3">Acompanhamento</h2>
+
+        <div class="row g-4">
+
+            <!-- Previsão de conclusão -->
+            <div class="col-md-6">
+                <span class="text-muted small d-block mb-1">
+                    Previsão de conclusão
+                </span>
+
+                <span class="fw-semibold">
+                    {{ ordem.data_previsao|default:"Não definida" }}
+                </span>
+            </div>
+
+            <!-- Data de saída -->
+            <div class="col-md-6">
+                <span class="text-muted small d-block mb-1">
+                    Data de saída
+                </span>
+
+                <span class="fw-semibold">
+                    {{ ordem.data_saida|default:"Ainda não registrada" }}
+                </span>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- Aviso de demonstração -->
+<div class="alert alert-info" role="status">
+    Esta página utiliza informações fictícias para demonstração.
+</div>
+
+<!-- Navegação inferior -->
+<div class="d-flex justify-content-end">
+    <a
+        href="{% url 'assistencia:ordens_servico_lista' %}"
+        class="btn btn-outline-secondary"
+    >
+        Voltar para a lista
+    </a>
+</div>
+
+{% endblock %}

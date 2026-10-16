@@ -1,0 +1,259 @@
+{% extends 'assistencia/base.html' %}
+
+{% block title %}{{ titulo }} | TecFlow{% endblock %}
+
+{% block content %}
+
+<!-- Cabeçalho e navegação -->
+<div class="mb-4">
+    <a
+        href="{% url 'assistencia:ordens_servico_lista' %}"
+        class="text-decoration-none small"
+    >
+        &larr; Voltar para Ordens de Serviço
+    </a>
+
+    <h1 class="h3 mt-2 mb-1">{{ titulo }}</h1>
+
+    <p class="text-muted mb-0">
+        Preencha as informações do atendimento técnico.
+    </p>
+</div>
+
+<!-- Formulário principal -->
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+
+        <!-- Aviso sobre a etapa visual -->
+        <div class="alert alert-info" role="status">
+            Formulário visual: as informações ainda não serão salvas.
+        </div>
+
+        <form>
+
+            <!-- Identificação do equipamento -->
+            <h2 class="h5 mb-3">Identificação</h2>
+
+            <div class="row g-3">
+
+                <!-- Equipamento -->
+                <div class="col-md-6">
+                    <label for="equipamento" class="form-label">
+                        Equipamento <span class="text-danger">*</span>
+                    </label>
+
+                    <select id="equipamento"
+                            name="equipamento"
+                            class="form-select">
+                        <option value="">Selecione um equipamento</option>
+                        <option value="1">Samsung Galaxy A54 — João da Silva</option>
+                        <option value="2">Dell Inspiron 15 — Maria Oliveira</option>
+                        <option value="3">Lenovo IdeaCentre — Pedro Santos</option>
+                    </select>
+                </div>
+
+                <!-- Técnico -->
+                <div class="col-md-6">
+                    <label for="tecnico" class="form-label">
+                        Técnico responsável
+                    </label>
+
+                    <select id="tecnico"
+                            name="tecnico"
+                            class="form-select">
+                        <option value="">Não atribuído</option>
+                        <option value="1">Carlos Mendes</option>
+                        <option value="2">Ana Costa</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <!-- Informações do atendimento -->
+            <hr class="my-4">
+
+            <h2 class="h5 mb-3">Atendimento técnico</h2>
+
+            <div class="row g-3">
+
+                <!-- Problema relatado -->
+                <div class="col-12">
+                    <label for="descricao_problema" class="form-label">
+                        Descrição do problema
+                    </label>
+
+                    <textarea
+                        id="descricao_problema"
+                        name="descricao_problema"
+                        class="form-control"
+                        rows="3"
+                        placeholder="Descreva o problema relatado pelo cliente..."
+                    ></textarea>
+                </div>
+
+                <!-- Diagnóstico -->
+                <div class="col-12">
+                    <label for="diagnostico" class="form-label">
+                        Diagnóstico técnico
+                    </label>
+
+                    <textarea
+                        id="diagnostico"
+                        name="diagnostico"
+                        class="form-control"
+                        rows="3"
+                        placeholder="Informe o diagnóstico, se já houver..."
+                    ></textarea>
+                </div>
+
+                <!-- Status -->
+                <div class="col-md-6">
+                    <label for="status" class="form-label">
+                        Status
+                    </label>
+
+                    <select id="status" name="status" class="form-select">
+                        <option value="RECEBIDA">Recebida</option>
+                        <option value="EM_ANALISE">Em análise</option>
+                        <option value="AGUARDANDO_APROVACAO">Aguardando aprovação</option>
+                        <option value="AGUARDANDO_PECAS">Aguardando peças</option>
+                        <option value="EM_REPARO">Em reparo</option>
+                        <option value="CONCLUIDA">Concluída</option>
+                        <option value="ENTREGUE">Entregue</option>
+                        <option value="CANCELADA">Cancelada</option>
+                    </select>
+                </div>
+
+                <!-- Prioridade -->
+                <div class="col-md-6">
+                    <label for="prioridade" class="form-label">
+                        Prioridade
+                    </label>
+
+                    <select id="prioridade"
+                            name="prioridade"
+                            class="form-select">
+                        <option value="BAIXA">Baixa</option>
+                        <option value="NORMAL" selected>Normal</option>
+                        <option value="ALTA">Alta</option>
+                        <option value="URGENTE">Urgente</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <!-- Orçamento -->
+            <hr class="my-4">
+
+            <h2 class="h5 mb-3">Orçamento</h2>
+
+            <div class="row g-3">
+
+                <!-- Valor -->
+                <div class="col-md-6">
+                    <label for="orcamento" class="form-label">
+                        Valor do orçamento (R$)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="orcamento"
+                        name="orcamento"
+                        class="form-control"
+                        min="0.01"
+                        step="0.01"
+                        placeholder="0,00"
+                    >
+                </div>
+
+                <!-- Aprovação -->
+                <div class="col-md-6 d-flex align-items-center">
+                    <div class="form-check mt-md-4">
+                        <input
+                            type="checkbox"
+                            id="orcamento_aprovado"
+                            name="orcamento_aprovado"
+                            class="form-check-input"
+                        >
+
+                        <label for="orcamento_aprovado"
+                               class="form-check-label">
+                            Orçamento aprovado pelo cliente
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Datas da ordem -->
+            <hr class="my-4">
+
+            <h2 class="h5 mb-3">Datas</h2>
+
+            <div class="row g-3">
+
+                <!-- Entrada -->
+                <div class="col-md-4">
+                    <label for="data_entrada" class="form-label">
+                        Data de entrada
+                    </label>
+
+                    <input
+                        type="datetime-local"
+                        id="data_entrada"
+                        name="data_entrada"
+                        class="form-control"
+                    >
+                </div>
+
+                <!-- Previsão -->
+                <div class="col-md-4">
+                    <label for="data_previsao" class="form-label">
+                        Previsão de conclusão
+                    </label>
+
+                    <input
+                        type="datetime-local"
+                        id="data_previsao"
+                        name="data_previsao"
+                        class="form-control"
+                    >
+                </div>
+
+                <!-- Saída -->
+                <div class="col-md-4">
+                    <label for="data_saida" class="form-label">
+                        Data de saída
+                    </label>
+
+                    <input
+                        type="datetime-local"
+                        id="data_saida"
+                        name="data_saida"
+                        class="form-control"
+                    >
+                </div>
+
+            </div>
+
+            <!-- Botões do formulário -->
+            <hr class="my-4">
+
+            <div class="d-flex flex-wrap justify-content-end gap-2">
+                <a
+                    href="{% url 'assistencia:ordens_servico_lista' %}"
+                    class="btn btn-outline-secondary"
+                >
+                    Cancelar
+                </a>
+
+                <button type="button" class="btn btn-primary">
+                    Salvar Ordem de Serviço
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+{% endblock %}

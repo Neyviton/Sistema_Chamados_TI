@@ -41,4 +41,26 @@ urlpatterns = [
         views.equipamento_editar,
         name='equipamento_editar',
     ),
+
+    # Rotas de Ordens de Serviço
+path(
+    'ordens-servico/',
+    views.ordens_servico_lista,
+    name='ordens_servico_lista',
+),
+path(
+    'ordens-servico/nova/',
+    views.ordem_servico_criar,
+    name='ordem_servico_criar',
+),
+path(
+    'ordens-servico/<int:pk>/',
+    views.ordem_servico_detalhes,
+    name='ordem_servico_detalhes',
+),
+path(
+    'ordens-servico/<int:pk>/editar/',
+    views.ordem_servico_editar,
+    name='ordem_servico_editar',
+),
 ]

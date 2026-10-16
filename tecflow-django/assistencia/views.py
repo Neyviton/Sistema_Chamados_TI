@@ -163,3 +163,116 @@ def equipamento_editar(request, pk):
         'assistencia/equipamentos/formulario.html',
         contexto,
     )
+
+# assistencia/views.py
+
+# Lista visual de Ordens de Serviço
+def ordens_servico_lista(request):
+    ordens_servico = [
+        {
+            'id': 1,
+            'equipamento': 'Samsung Galaxy A54',
+            'cliente': 'João da Silva',
+            'tecnico': 'Carlos Mendes',
+            'status': 'EM_REPARO',
+            'status_label': 'Em reparo',
+            'prioridade': 'ALTA',
+            'prioridade_label': 'Alta',
+            'orcamento': '250,00',
+            'data_entrada': '16/10/2026',
+        },
+        {
+            'id': 2,
+            'equipamento': 'Dell Inspiron 15',
+            'cliente': 'Maria Oliveira',
+            'tecnico': 'Ana Costa',
+            'status': 'EM_ANALISE',
+            'status_label': 'Em análise',
+            'prioridade': 'NORMAL',
+            'prioridade_label': 'Normal',
+            'orcamento': '180,00',
+            'data_entrada': '15/10/2026',
+        },
+        {
+            'id': 3,
+            'equipamento': 'Lenovo IdeaCentre',
+            'cliente': 'Pedro Santos',
+            'tecnico': None,
+            'status': 'RECEBIDA',
+            'status_label': 'Recebida',
+            'prioridade': 'URGENTE',
+            'prioridade_label': 'Urgente',
+            'orcamento': None,
+            'data_entrada': '14/10/2026',
+        },
+    ]
+
+    contexto = {
+        'ordens_servico': ordens_servico,
+    }
+
+    return render(
+        request,
+        'assistencia/ordens_servico/lista.html',
+        contexto,
+    )
+
+
+# Formulário visual para cadastro de ordem
+def ordem_servico_criar(request):
+    contexto = {
+        'titulo': 'Nova Ordem de Serviço',
+        'modo': 'criar',
+    }
+
+    return render(
+        request,
+        'assistencia/ordens_servico/formulario.html',
+        contexto,
+    )
+
+
+# Detalhes de uma ordem fictícia
+def ordem_servico_detalhes(request, pk):
+    ordem = {
+        'id': pk,
+        'equipamento': 'Samsung Galaxy A54',
+        'cliente': 'João da Silva',
+        'tecnico': 'Carlos Mendes',
+        'descricao_problema': 'Equipamento não está carregando corretamente.',
+        'diagnostico': 'Conector de carregamento precisa ser avaliado.',
+        'status': 'EM_REPARO',
+        'status_label': 'Em reparo',
+        'prioridade': 'ALTA',
+        'prioridade_label': 'Alta',
+        'orcamento': '250,00',
+        'orcamento_aprovado': False,
+        'data_entrada': '16/10/2026 às 09:30',
+        'data_previsao': '20/10/2026 às 17:00',
+        'data_saida': None,
+    }
+
+    contexto = {
+        'ordem': ordem,
+    }
+
+    return render(
+        request,
+        'assistencia/ordens_servico/detalhes.html',
+        contexto,
+    )
+
+
+# Formulário visual para edição de ordem
+def ordem_servico_editar(request, pk):
+    contexto = {
+        'titulo': 'Editar Ordem de Serviço',
+        'modo': 'editar',
+        'ordem_id': pk,
+    }
+
+    return render(
+        request,
+        'assistencia/ordens_servico/formulario.html',
+        contexto,
+    )
