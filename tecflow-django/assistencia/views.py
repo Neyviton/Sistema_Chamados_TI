@@ -66,3 +66,4 @@ def cliente_excluir(request, pk):
     }
 
     return render(request, 'assistencia/clientes/detalhes.html', contexto)
+    
