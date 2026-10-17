@@ -1,4 +1,3 @@
-
 {% extends 'base.html' %}
 
 {% block title %}Dashboard | TecFlow{% endblock %}
@@ -30,48 +29,55 @@
 
 <div class="row g-3">
 
+    <!-- Clientes -->
     <div class="col-12 col-md-6 col-lg-4">
-        <div class="card h-100 shadow-sm">
+        <a href="{% url 'assistencia:clientes_lista' %}"
+           class="card h-100 shadow-sm text-decoration-none text-dark">
             <div class="card-body">
                 <h3 class="h5">Clientes</h3>
                 <p class="text-muted">
                     Cadastro e gerenciamento dos clientes da assistência.
                 </p>
-                <span class="badge text-bg-secondary">
-                    Em desenvolvimento
+                <span class="btn btn-outline-primary btn-sm">
+                    Acessar clientes →
                 </span>
             </div>
-        </div>
+        </a>
     </div>
 
+    <!-- Equipamentos -->
     <div class="col-12 col-md-6 col-lg-4">
-        <div class="card h-100 shadow-sm">
+        <a href="{% url 'assistencia:equipamentos_lista' %}"
+           class="card h-100 shadow-sm text-decoration-none text-dark">
             <div class="card-body">
                 <h3 class="h5">Equipamentos</h3>
                 <p class="text-muted">
                     Organização dos aparelhos recebidos para manutenção.
                 </p>
-                <span class="badge text-bg-secondary">
-                    Em desenvolvimento
+                <span class="btn btn-outline-primary btn-sm">
+                    Acessar equipamentos →
                 </span>
             </div>
-        </div>
+        </a>
     </div>
 
+    <!-- Ordens de serviço -->
     <div class="col-12 col-md-6 col-lg-4">
-        <div class="card h-100 shadow-sm">
+        <a href="{% url 'assistencia:ordens_servico_lista' %}"
+           class="card h-100 shadow-sm text-decoration-none text-dark">
             <div class="card-body">
                 <h3 class="h5">Ordens de serviço</h3>
                 <p class="text-muted">
                     Acompanhamento dos reparos, diagnósticos e status.
                 </p>
-                <span class="badge text-bg-secondary">
-                    Em desenvolvimento
+                <span class="btn btn-outline-primary btn-sm">
+                    Acessar ordens →
                 </span>
             </div>
-        </div>
+        </a>
     </div>
 
+    <!-- Técnicos -->
     <div class="col-12 col-md-6 col-lg-4">
         <div class="card h-100 shadow-sm">
             <div class="card-body">
@@ -80,24 +86,26 @@
                     Gerenciamento da equipe técnica e especialidades.
                 </p>
                 <span class="badge text-bg-secondary">
-                    Em desenvolvimento
+                    Área ainda não conectada
                 </span>
             </div>
         </div>
     </div>
 
+    <!-- Pagamentos -->
     <div class="col-12 col-md-6 col-lg-4">
-        <div class="card h-100 shadow-sm">
+        <a href="{% url 'assistencia:pagamentos_lista' %}"
+           class="card h-100 shadow-sm text-decoration-none text-dark">
             <div class="card-body">
                 <h3 class="h5">Pagamentos</h3>
                 <p class="text-muted">
                     Organização dos pagamentos vinculados aos serviços.
                 </p>
-                <span class="badge text-bg-secondary">
-                    Em desenvolvimento
+                <span class="btn btn-outline-primary btn-sm">
+                    Acessar pagamentos →
                 </span>
             </div>
-        </div>
+        </a>
     </div>
 
 </div>
