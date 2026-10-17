@@ -23,4 +23,3 @@ db.sqlite3
 # Arquivos estáticos coletados
 staticfiles/
 
-assistencia/migrations/
