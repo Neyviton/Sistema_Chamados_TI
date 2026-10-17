@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ titulo|default:"Equipamento" }} | TecFlow{% endblock %}
+
+{% block content %}
+
+<!-- Cabeçalho da página -->
+<div class="mb-4">
+    <a
+        href="{% url 'assistencia:equipamentos_lista' %}"
+        class="text-decoration-none small"
+    >
+        &larr; Voltar para equipamentos
+    </a>
+
+    <h1 class="h3 mt-2 mb-1">{{ titulo }}</h1>
+
+    <p class="text-muted mb-0">
+        Preencha as informações do equipamento.
+    </p>
+</div>
+
+<!-- Formulário de equipamento -->
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            <!-- Erros gerais do formulário -->
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <!-- Dados principais do equipamento -->
+            <h2 class="h5 mb-3">Dados do equipamento</h2>
+
+            <div class="row g-3">
+
+                <!-- Cliente responsável -->
+                <div class="col-md-6">
+                    <label for="{{ form.cliente.id_for_label }}" class="form-label">
+                        {{ form.cliente.label }}
+                        {% if form.cliente.field.required %}<span class="text-danger">*</span>{% endif %}
+                    </label>
+
+                    {{ form.cliente }}
+
+                    {% for erro in form.cliente.errors %}
+                        <div class="text-danger small mt-1">{{ erro }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Tipo de equipamento -->
+                <div class="col-md-6">
+                    <label for="{{ form.tipo.id_for_label }}" class="form-label">
+                        {{ form.tipo.label }}
+                        {% if form.tipo.field.required %}<span class="text-danger">*</span>{% endif %}
+                    </label>
+
+                    {{ form.tipo }}
+
+                    {% for erro in form.tipo.errors %}
+                        <div class="text-danger small mt-1">{{ erro }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Marca -->
+                <div class="col-md-6">
+                    <label for="{{ form.marca.id_for_label }}" class="form-label">
+                        {{ form.marca.label }}
+                        {% if form.marca.field.required %}<span class="text-danger">*</span>{% endif %}
+                    </label>
+
+                    {{ form.marca }}
+
+                    {% for erro in form.marca.errors %}
+                        <div class="text-danger small mt-1">{{ erro }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Modelo -->
+                <div class="col-md-6">
+                    <label for="{{ form.modelo.id_for_label }}" class="form-label">
+                        {{ form.modelo.label }}
+                        {% if form.modelo.field.required %}<span class="text-danger">*</span>{% endif %}
+                    </label>
+
+                    {{ form.modelo }}
+
+                    {% for erro in form.modelo.errors %}
+                        <div class="text-danger small mt-1">{{ erro }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Número de série -->
+                <div class="col-12">
+                    <label for="{{ form.numero_serie.id_for_label }}" class="form-label">
+                        {{ form.numero_serie.label }}
+                    </label>
+
+                    {{ form.numero_serie }}
+
+                    {% for erro in form.numero_serie.errors %}
+                        <div class="text-danger small mt-1">{{ erro }}</div>
+                    {% endfor %}
+
+                    <div class="form-text">
+                        Campo opcional.
+                    </div>
+                </div>
+
+                <!-- Descrição -->
+                <div class="col-12">
+                    <label for="{{ form.descricao.id_for_label }}" class="form-label">
+                        {{ form.descricao.label }}
+                    </label>
+
+                    {{ form.descricao }}
+
+                    {% for erro in form.descricao.errors %}
+                        <div class="text-danger small mt-1">{{ erro }}</div>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+            <!-- Botões do formulário -->
+            <hr class="my-4">
+
+            <div class="d-flex flex-wrap justify-content-end gap-2">
+                <a
+                    href="{% url 'assistencia:equipamentos_lista' %}"
+                    class="btn btn-outline-secondary"
+                >
+                    Cancelar
+                </a>
+
+                <button type="submit" class="btn btn-primary">
+                    Salvar equipamento
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+{% endblock %}
