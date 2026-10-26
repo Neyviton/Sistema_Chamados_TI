@@ -1,6 +1,6 @@
 # TecFlow
 
-O **TecFlow** é um sistema de gerenciamento de assistência técnica desenvolvido com **Python e Django**.
+O **TecFlow** é um sistema de gerenciamento de assistência técnica.
 
 ## Sobre o projeto
 
@@ -41,6 +41,7 @@ O projeto utiliza as seguintes tecnologias:
  **Django** — Framework para desenvolvimento web.
  **HTML** — Estrutura das páginas.
  **CSS** — Estilização da interface.
+ **Bootstrap** — Componentes visuais e responsividade.
  **Git** — Controle de versões.
  **GitHub** — Hospedagem do código e colaboração.
 
