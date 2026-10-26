@@ -1,6 +1,6 @@
-{% extends 'assistencia/base.html' %}
+{% extends 'base.html' %}
 
-{% block title %}{{ titulo }} | TecFlow{% endblock %}
+{% block title %}{{ titulo|default:"Pagamento" }} | TecFlow{% endblock %}
 
 {% block content %}
 
@@ -24,12 +24,15 @@
 <div class="card border-0 shadow-sm">
     <div class="card-body p-4">
 
-        <!-- Aviso sobre o modo visual -->
-        <div class="alert alert-info" role="status">
-            Formulário visual: as informações não serão salvas nesta etapa.
-        </div>
+        <form method="post" novalidate>
+            {% csrf_token %}
 
-        <form>
+            <!-- Erros gerais do formulário -->
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
 
             <!-- Identificação da Ordem de Serviço -->
             <h2 class="h5 mb-3">Ordem de Serviço</h2>
@@ -38,26 +41,20 @@
 
                 <!-- Ordem relacionada -->
                 <div class="col-12">
-                    <label for="ordem_servico" class="form-label">
-                        Ordem de Serviço <span class="text-danger">*</span>
+                    <label for="{{ form.ordem_servico.id_for_label }}" class="form-label">
+                        {{ form.ordem_servico.label }}
+                        {% if form.ordem_servico.field.required %}<span class="text-danger">*</span>{% endif %}
                     </label>
 
-                    <select
-                        id="ordem_servico"
-                        name="ordem_servico"
-                        class="form-select"
-                    >
-                        <option value="">Selecione uma Ordem de Serviço</option>
-                        <option value="1">
-                            #1 — Samsung Galaxy A54 — João da Silva
-                        </option>
-                        <option value="2">
-                            #2 — Dell Inspiron 15 — Maria Oliveira
-                        </option>
-                    </select>
+                    {{ form.ordem_servico }}
+
+                    {% for erro in form.ordem_servico.errors %}
+                        <div class="text-danger small mt-1">{{ erro }}</div>
+                    {% endfor %}
 
                     <div class="form-text">
                         Selecione a ordem à qual este pagamento pertence.
+                        Ela precisa ter orçamento aprovado.
                     </div>
                 </div>
 
@@ -72,24 +69,20 @@
 
                 <!-- Valor -->
                 <div class="col-md-6">
-                    <label for="valor" class="form-label">
-                        Valor do pagamento (R$)
-                        <span class="text-danger">*</span>
+                    <label for="{{ form.valor.id_for_label }}" class="form-label">
+                        {{ form.valor.label }}
+                        {% if form.valor.field.required %}<span class="text-danger">*</span>{% endif %}
                     </label>
 
                     <div class="input-group">
                         <span class="input-group-text">R$</span>
 
-                        <input
-                            type="number"
-                            id="valor"
-                            name="valor"
-                            class="form-control"
-                            min="0.01"
-                            step="0.01"
-                            placeholder="0,00"
-                        >
+                        {{ form.valor }}
                     </div>
+
+                    {% for erro in form.valor.errors %}
+                        <div class="text-danger small mt-1">{{ erro }}</div>
+                    {% endfor %}
 
                     <div class="form-text">
                         O valor deve respeitar o orçamento aprovado da ordem.
@@ -98,52 +91,43 @@
 
                 <!-- Forma de pagamento -->
                 <div class="col-md-6">
-                    <label for="forma_pagamento" class="form-label">
-                        Forma de pagamento
-                        <span class="text-danger">*</span>
+                    <label for="{{ form.forma_pagamento.id_for_label }}" class="form-label">
+                        {{ form.forma_pagamento.label }}
+                        {% if form.forma_pagamento.field.required %}<span class="text-danger">*</span>{% endif %}
                     </label>
 
-                    <select
-                        id="forma_pagamento"
-                        name="forma_pagamento"
-                        class="form-select"
-                    >
-                        <option value="">Selecione a forma</option>
-                        <option value="DINHEIRO">Dinheiro</option>
-                        <option value="PIX">Pix</option>
-                        <option value="CREDITO">Cartão de crédito</option>
-                        <option value="DEBITO">Cartão de débito</option>
-                        <option value="OUTRO">Outro</option>
-                    </select>
+                    {{ form.forma_pagamento }}
+
+                    {% for erro in form.forma_pagamento.errors %}
+                        <div class="text-danger small mt-1">{{ erro }}</div>
+                    {% endfor %}
                 </div>
 
                 <!-- Data do pagamento -->
                 <div class="col-12">
-                    <label for="data_pagamento" class="form-label">
-                        Data do pagamento
+                    <label for="{{ form.data_pagamento.id_for_label }}" class="form-label">
+                        {{ form.data_pagamento.label }}
+                        {% if form.data_pagamento.field.required %}<span class="text-danger">*</span>{% endif %}
                     </label>
 
-                    <input
-                        type="datetime-local"
-                        id="data_pagamento"
-                        name="data_pagamento"
-                        class="form-control"
-                    >
+                    {{ form.data_pagamento }}
+
+                    {% for erro in form.data_pagamento.errors %}
+                        <div class="text-danger small mt-1">{{ erro }}</div>
+                    {% endfor %}
                 </div>
 
                 <!-- Observações -->
                 <div class="col-12">
-                    <label for="observacao" class="form-label">
-                        Observações
+                    <label for="{{ form.observacao.id_for_label }}" class="form-label">
+                        {{ form.observacao.label }}
                     </label>
 
-                    <textarea
-                        id="observacao"
-                        name="observacao"
-                        class="form-control"
-                        rows="3"
-                        placeholder="Informações adicionais sobre o pagamento..."
-                    ></textarea>
+                    {{ form.observacao }}
+
+                    {% for erro in form.observacao.errors %}
+                        <div class="text-danger small mt-1">{{ erro }}</div>
+                    {% endfor %}
                 </div>
 
             </div>
@@ -159,7 +143,7 @@
                     Cancelar
                 </a>
 
-                <button type="button" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary">
                     Salvar pagamento
                 </button>
             </div>
